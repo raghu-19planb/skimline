@@ -33,11 +33,33 @@ export interface Observation {
   line: RunLine | null;
   /** Share of the mapped outline that was water, 0–1. */
   water_share: number;
+  /** Water surface elevation from the official gauge that day, metres above sea level. Absent where there is no gauge. */
+  level_m?: number | null;
+  /** Percent of capacity from the official gauge that day. */
+  fill_pct?: number | null;
+  /** Run known to be at least the minimum depth deep; null where that cannot be known. */
+  deep_run_m?: number | null;
+}
+
+/** The official water-level gauge of a reservoir. */
+export interface Gauge {
+  station: string;
+  source: string;
+  first: string | null;
+  last: string | null;
 }
 
 export interface ObservedFile {
-  meta: { source: string; years: [number, number] };
-  reservoirs: { id: string; name: string | null; mapped_run_m: number; series: Observation[] }[];
+  meta: { source: string; years: [number, number]; depth?: { min_depth_m: number; method: string } };
+  reservoirs: {
+    id: string;
+    name: string | null;
+    mapped_run_m: number;
+    series: Observation[];
+    gauge?: Gauge;
+    /** Mean percent of capacity per month over the gauge record: [['2000-01', 78.2], ...]. */
+    fill_history?: [string, number][];
+  }[];
 }
 
 export interface WaterProps {
@@ -85,6 +107,8 @@ export interface ReservoirRecord {
   driest: Observation;
   /** Observation with the least water surface: the clearest sign of drawdown, independent of run length. */
   lowestSurface: Observation;
+  gauge: Gauge | null;
+  fillHistory: [string, number][];
 }
 
 /** A mapped fire, reduced to a point for ranking. Position is in the region's local frame (km) and in degrees. */
@@ -109,6 +133,8 @@ export interface Region {
   /** Satellite records, keyed by index into `water.features`. */
   observed: Map<number, ReservoirRecord>;
   observedMeta: ObservedFile['meta'] | null;
+  /** Depth used for the known-deep runs, metres; null where the region has no gauges. */
+  minDepthM: number | null;
   /** Centres of the analysis grid cells, in the local frame (km). */
   cells: { x: number; y: number }[];
   fireCentres: FireCentre[];

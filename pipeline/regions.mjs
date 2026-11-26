@@ -39,3 +39,16 @@ export const PARAMS = {
   minRunKeptM: 400, // water bodies whose longest run is shorter are dropped from the output
   directionStepDeg: 3,
 };
+
+// Official water-level gauges, by region. `match` picks the reservoir by its mapped name.
+// Used by 07-levels.mjs to turn satellite observations into levels and known depths.
+const ACA = 'Agència Catalana de l’Aigua, open data (daily level and volume, since 2000)';
+export const GAUGES = {
+  'es-catalonia': [
+    { match: /Baells/, station: 'Embassament de la Baells (Cercs)', source: ACA },
+    { match: /Llosa del Cavall/, station: 'Embassament de la Llosa del Cavall (Navès)', source: ACA },
+    { match: /Sau/, station: 'Embassament de Sau (Vilanova de Sau)', source: ACA },
+    { match: /Sant Ponç/, station: 'Embassament de Sant Ponç (Clariana de Cardener)', source: ACA },
+    { match: /Susqueda/, station: 'Embassament de Susqueda (Osor)', source: ACA },
+  ],
+};

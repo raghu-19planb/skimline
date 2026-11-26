@@ -828,3 +828,42 @@ body.demo #app {
   border-radius: 50%;
   background: var(--fire);
 }
+
+/* the reservoir card can be long: it scrolls inside the map */
+.readout {
+  max-height: calc(100% - 68px);
+  overflow-y: auto;
+}
+.readout h4 {
+  margin: 14px 0 6px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.spark .deep {
+  fill: none;
+  stroke: var(--water-deep);
+  stroke-width: 1.2;
+  stroke-dasharray: 1 3;
+  stroke-linecap: round;
+}
+.spark .ok {
+  fill: var(--water);
+}
+.spark.fill .area {
+  fill: var(--water-soft);
+}
+.key .k-deep {
+  border-top: 2px dotted var(--water-deep);
+}
+.key .k-ok {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--water);
+}

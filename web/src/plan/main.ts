@@ -94,7 +94,7 @@ function openWaterBody(body: number, fly = true): void {
   probe = null;
   view.clearProbe();
   if (fly) view.flyTo((props.run[0] + props.run[2]) / 2, (props.run[1] + props.run[3]) / 2, 11);
-  showWater(props, region.observed.get(body), settings.threshold, settings.scenario === 'dry');
+  showWater(props, region.observed.get(body), settings.threshold, settings.scenario === 'dry', region.minDepthM);
 }
 
 function openFire({ fire }: FireAccess): void {

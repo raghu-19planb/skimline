@@ -53,6 +53,8 @@ export function assembleRegion(
       series: reservoir.series,
       driest: leastBy(reservoir.series, (o) => o.run_m),
       lowestSurface: leastBy(reservoir.series, (o) => o.water_share),
+      gauge: reservoir.gauge ?? null,
+      fillHistory: reservoir.fill_history ?? [],
     });
   }
 
@@ -93,7 +95,20 @@ export function assembleRegion(
     fireCentres.push({ x, y, lon, lat, props: feature.properties });
   }
 
-  return { info, frame, water, fires, runs, dryRuns, observed, observedMeta: observedFile?.meta ?? null, cells, fireCentres, area };
+  return {
+    info,
+    frame,
+    water,
+    fires,
+    runs,
+    dryRuns,
+    observed,
+    observedMeta: observedFile?.meta ?? null,
+    minDepthM: observedFile?.meta.depth?.min_depth_m ?? null,
+    cells,
+    fireCentres,
+    area,
+  };
 }
 
 /**

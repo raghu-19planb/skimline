@@ -145,11 +145,93 @@
           longest straight run measured about 930 m, with water over 35 % of the mapped outline. That is well short of any published requirement.
         </li>
       </ul>
+      <p>One case each way. A long enough run is necessary but not sufficient, so we tested the two most likely missing pieces: depth and width.</p>
+
+      <h2>Water level and depth</h2>
       <p>
-        One case each way. The lesson is that a long enough run is necessary but not sufficient. What closed La Baells was almost certainly depth and hazards
-        exposed by the falling water, which open outlines cannot show. The site therefore reports the water surface share beside the run, and treats a sharp
-        fall in surface as a warning even where the run still looks long enough. Turning surface loss into a depth estimate, using reservoir level records, is
-        the next step on the roadmap.
+        Where a reservoir has an official gauge, each satellite observation is joined to the water level and percent of capacity recorded that day. For the
+        Catalan reservoirs these come from the Catalan Water Agency's open data, daily since 2000. On 2 April 2023 the gauge put La Baells at 26.0 % of
+        capacity, matching the figure reported in the press.
+      </p>
+      <p>
+        Levels give depth without a bathymetric survey. Water does not move sideways when a reservoir falls: whatever was still under water when the surface
+        stood 1.8 m lower is, today, under at least 1.8 m of water. So the run seen on any date when the gauge read at least 1.8 m lower is a run
+        <em>known</em> to be at least that deep today. 1.8 m is the minimum depth for multi-engine scoopers in NWCG PMS 518. This is a guaranteed minimum, not
+        an estimate of true depth, and it says nothing for dates within 1.8 m of the lowest level on record: there the answer is "not known", which is not the
+        same as "too shallow".
+      </p>
+      <p>
+        <strong>Result: depth did not explain the closure.</strong> On 2 April 2023 the level at La Baells was 5.4 m above the lowest in our record, and the run
+        seen at those lower levels was still about 2,120 m. So on the day it was closed, at least 2,120 m of straight water was more than 1.8 m deep.
+      </p>
+
+      <h2>An experiment on width</h2>
+      <p>
+        The run is measured with a clear corridor 100 m wide, slightly more than the 91 m minimum width used by Natural Resources Canada authors. We re-measured
+        La Baells on four dates with wider corridors. The longest straight run, in metres:
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>State</th>
+              <th>100 m wide</th>
+              <th>150 m</th>
+              <th>200 m</th>
+              <th>250 m</th>
+              <th>300 m</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1 Apr 2025</td>
+              <td>nearly full</td>
+              <td>2,860</td>
+              <td>2,340</td>
+              <td>2,250</td>
+              <td>2,020</td>
+              <td>1,510</td>
+            </tr>
+            <tr>
+              <td>4 Sep 2022</td>
+              <td>drawn down</td>
+              <td>2,180</td>
+              <td>2,090</td>
+              <td>1,850</td>
+              <td>1,140</td>
+              <td>530</td>
+            </tr>
+            <tr>
+              <td>2 Apr 2023</td>
+              <td>26 % full, closed to scoopers</td>
+              <td>2,120</td>
+              <td>2,020</td>
+              <td>1,420</td>
+              <td>690</td>
+              <td>320</td>
+            </tr>
+            <tr>
+              <td>15 Mar 2024</td>
+              <td>20 % full, lowest in record</td>
+              <td>2,050</td>
+              <td>1,440</td>
+              <td>1,230</td>
+              <td>520</td>
+              <td>260</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        With a 100 m corridor the reservoir never drops below a nautical mile. With a 200 m corridor it has 2,250 m when full and 1,420 m on the day it was
+        closed. The drawn-down reservoir is not too short and not too shallow; it is too narrow. That is consistent with the fire service's own words, that it
+        lacked a safe enough water surface.
+      </p>
+      <p>
+        This is one reservoir and four dates, so it is a lead, not a finding. The width a crew actually needs is a judgement we have not confirmed with one. The
+        map still uses the 100 m corridor; making the clear width a setting beside the run length is the next step. The experiment can be repeated with
+        <code>pipeline/experiments/width-sensitivity.mjs</code>.
       </p>
 
       <h2>Numbers and where they come from</h2>
@@ -203,8 +285,8 @@
             <tr>
               <td>Minimum depth</td>
               <td>1.8 m (6 ft)</td>
-              <td><span class="flag asm">not tested</span></td>
-              <td>NWCG PMS 518 (2026). Open outlines carry no depth</td>
+              <td><span class="flag src">sourced</span></td>
+              <td>NWCG PMS 518 (2026). Checked only where a water-level gauge is connected</td>
             </tr>
             <tr>
               <td>Straight-line flight</td>

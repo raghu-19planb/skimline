@@ -9,6 +9,9 @@
 //
 // To cover a new feature, add an act to ACTS.
 
+import { setHtml } from './dom.ts';
+import { html } from './format.ts';
+
 export interface DemoApi {
   setThreshold(m: number): void;
   setScenario(s: 'mapped' | 'dry'): void;
@@ -204,7 +207,7 @@ export function runDemo(api: DemoApi, reset: () => Promise<void>) {
   }
   const say = (i: number, n: number, act: Act) => {
     if (embedded) window.parent.postMessage({ source: 'skimline-demo', i, n, title: act.title, text: act.text }, location.origin);
-    else bar!.innerHTML = `<small>Recorded tour · ${i + 1} of ${n}</small><b>${act.title}</b><span>${act.text}</span>`;
+    else if (bar) setHtml(bar, html`<small>Tour · ${i + 1} of ${n}</small><b>${act.title}</b><span>${act.text}</span>`);
   };
   const whilePaused = async () => {
     while (paused) await wait(200);

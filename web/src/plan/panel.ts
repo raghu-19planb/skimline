@@ -1,10 +1,11 @@
 // The left-hand panel: the five steps. Rendering only; decisions live in main.ts.
-import { FAR_MINUTES, NEAR_MINUTES } from './analysis.ts';
+import { FAR_MINUTES, NEAR_MINUTES, levelFinding } from './analysis.ts';
 import type { FireAccess, ReservoirRow, Summary } from './analysis.ts';
 import { button, el, setHtml } from './dom.ts';
 import { fmt, html, monthYear, pct } from './format.ts';
 import { CLASSES } from './model.ts';
-import { sparkline } from './sparkline.ts';
+import { levelSentence } from './readout.ts';
+import { sparkline } from './charts.ts';
 import type { Manifest, Region, RegionInfo, Scenario } from './types.ts';
 
 const COUNTRY: Record<string, string> = { ES: 'Spain', CA: 'Canada', PT: 'Portugal' };
@@ -138,8 +139,8 @@ export function renderReservoirs(region: Region, rows: ReservoirRow[], threshold
           <span class="m ${row.monthsBelow ? '' : 'ok'}">${row.monthsBelow ? `${row.monthsBelow} of ${record.series.length} months` : 'never'}</span>
           ${sparkline(record.series, row.mappedRunM, threshold, 300, 44)}
           <span class="s"
-            >Shortest run: ${fmt(record.driest.run_m)} m in ${monthYear(record.driest.date)} · mapped ${fmt(row.mappedRunM)} m · water down to
-            ${pct(record.lowestSurface.water_share)} of its full area</span
+            >${record.gauge ? `${levelSentence(levelFinding(record.series, threshold), threshold)} ` : ''}Shortest run: ${fmt(record.driest.run_m)} m in
+            ${monthYear(record.driest.date)} · mapped ${fmt(row.mappedRunM)} m · water down to ${pct(record.lowestSurface.water_share)} of its full area</span
           >`,
         () => onPick(row.body),
       ),

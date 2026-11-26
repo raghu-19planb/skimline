@@ -2,7 +2,7 @@
 // so every number shown to a planner can be unit-tested.
 import { CLASSES, classOf, nearest, toXY } from './model.ts';
 import type { Nearest, Run } from './model.ts';
-import type { FireCentre, Region, ReservoirRecord, Scenario } from './types.ts';
+import type { FireCentre, Observation, Region, ReservoirRecord, Scenario } from './types.ts';
 
 /** "Close to water": ten or more loads an hour. */
 export const NEAR_MINUTES = 6;
@@ -106,4 +106,38 @@ export function reservoirRows(region: Region, threshold: number): ReservoirRow[]
   }
   const share = (row: ReservoirRow) => row.monthsBelow / row.record.series.length;
   return rows.sort((a, b) => share(b) - share(a) || a.record.driest.run_m - b.record.driest.run_m);
+}
+
+/** An observation that has a gauge reading. */
+export type Gauged = Observation & { level_m: number };
+
+/**
+ * What the gauge record says about run length and water level.
+ *  - always:    long enough at every gauged observation; `lowest` is the lowest level seen
+ *  - never:     too short at every gauged observation; `highest` is the highest level seen
+ *  - threshold: too short at `shortAt` and below; long enough from `longFrom` up
+ *               (`longFrom` is null if nothing higher was observed)
+ */
+export type LevelFinding =
+  | { kind: 'ungauged' }
+  | { kind: 'always'; lowest: Gauged }
+  | { kind: 'never'; highest: Gauged }
+  | { kind: 'threshold'; shortAt: Gauged; longFrom: Gauged | null };
+
+/**
+ * The level below which a reservoir loses its run. Deliberately cautious: the dividing
+ * line is the HIGHEST level at which the run was ever seen too short, so one clear image
+ * of a short run outweighs noisier ones at lower levels that happened to look longer.
+ */
+export function levelFinding(series: Observation[], threshold: number): LevelFinding {
+  const gauged = series.filter((o): o is Gauged => typeof o.level_m === 'number');
+  if (!gauged.length) return { kind: 'ungauged' };
+  const byLevel = (a: Gauged, b: Gauged) => a.level_m - b.level_m;
+  const short = gauged.filter((o) => o.run_m < threshold).sort(byLevel);
+  const long = gauged.filter((o) => o.run_m >= threshold).sort(byLevel);
+  const shortAt = short.at(-1);
+  if (!shortAt) return { kind: 'always', lowest: long[0] as Gauged };
+  const highest = [...gauged].sort(byLevel).at(-1) as Gauged;
+  if (!long.length) return { kind: 'never', highest };
+  return { kind: 'threshold', shortAt, longFrom: long.find((o) => o.level_m > shortAt.level_m) ?? null };
 }

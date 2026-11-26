@@ -12,10 +12,11 @@ Ordered by how much each step would matter to the people we want to show this to
 
 ## Next: make the drought finding defensible
 
-1. **Validated against a documented case: done, with a clear lesson.** Catalonia, April 2023: amphibious aircraft could not use La Baells at about 26 % of capacity. The satellite step saw the water surface at 42 % of the mapped outline, but the straight run was still about 2,120 m, above the default. Run length alone did not predict the closure; depth and exposed hazards did. So the next step is the one below.
-1b. **From surface to depth.** Combine observed water surface with reservoir level records and, where published, bathymetry, to estimate when a run becomes too shallow. This is what would make the drought layer operationally meaningful. *Who: basin authorities, fire agencies, researchers.*
+1. **Tested against a documented case: done.** Catalonia, April 2023: amphibious aircraft could not use La Baells at 26 % of capacity. Run length did not predict it (2,120 m that day), and neither did depth (that run was known to be over 1.8 m deep). A width experiment did: with a 200 m clear corridor the run was 2,250 m when full and 1,420 m on the day it was closed.
+1a. **Clear width as a setting. Next.** Measure every run, mapped and observed, at several corridor widths, and let the visitor set the width beside the run length. Confirm with an aerial firefighting crew what width they actually need. *Who: fire agencies.*
+1b. **Depth from water level: done for gauged reservoirs.** Where an official gauge exists (Catalonia), each observation carries the level and percent of capacity, the run known to be at least 1.8 m deep, and the level below which the run is lost. Next: connect the SAIH gauges of the Miño-Sil, Duero and Ebro basins. *Who: basin authorities, fire agencies, researchers.*
 2. **Validate against gauges.** Compare observed water share with official weekly reservoir storage (Spanish ministry hydrological bulletin). *Who: basin authorities.*
-3. **The level that matters.** For each reservoir, the storage level below which the run is lost. This is the number a dam operator can act on in fire season. *Who: basin authorities, dam operators.*
+3. **The level that matters: done where gauged.** For each gauged reservoir, the level below which the run is lost, shown in its card. *Who: basin authorities, dam operators.*
 4. **Month slider.** Show the whole region as it was in a chosen month, instead of each reservoir at its own driest.
 
 ## Then: close the known gaps

@@ -8,6 +8,8 @@ import { el, prefersReducedMotion } from '../plan/dom.ts';
 const FRAME_W = 1280;
 const FRAME_H = 800;
 const DEMO_URL = '/plan.html?demo=1&region=es-northwest';
+/** How long to wait for the frame's first sign of life before saying it failed. */
+const LOAD_TIMEOUT_MS = 20000;
 
 interface DemoMessage {
   source: 'skimline-demo';
@@ -39,11 +41,32 @@ export function initPlayer(): void {
 
   const send = (cmd: 'play' | 'pause' | 'restart') => frame?.contentWindow?.postMessage({ source: 'skimline-host', cmd }, location.origin);
 
+  // If the frame cannot load (the page was opened from a file, the network dropped, a
+  // browser extension blocked it), say so plainly instead of leaving an empty box.
+  let watchdog = 0;
+  function giveUp(reason: string): void {
+    frame?.remove();
+    frame = null;
+    playing = false;
+    pause.disabled = true;
+    restart.disabled = true;
+    poster.classList.remove('gone');
+    el('cap-step').textContent = 'Tour';
+    el('cap-title').textContent = 'The tour could not start here';
+    el('cap-text').textContent = reason;
+  }
+
   function start(): void {
     if (frame) return;
+    if (location.protocol === 'file:') {
+      giveUp('This page was opened from a file on disk. The tour plays on the live site.');
+      return;
+    }
+    clearTimeout(watchdog);
+    watchdog = window.setTimeout(() => giveUp('The map took too long to load. Press play to try again, or open the planning page yourself.'), LOAD_TIMEOUT_MS);
     frame = document.createElement('iframe');
     frame.src = DEMO_URL;
-    frame.title = 'Recorded tour of the Skimline planning page';
+    frame.title = 'Tour of the Skimline planning page';
     frame.width = String(FRAME_W);
     frame.height = String(FRAME_H);
     frame.tabIndex = -1;
@@ -70,8 +93,9 @@ export function initPlayer(): void {
 
   window.addEventListener('message', (event) => {
     if (event.origin !== location.origin || !isDemoMessage(event.data)) return;
+    clearTimeout(watchdog); // the frame is alive
     const { i, n, title, text } = event.data;
-    el('cap-step').textContent = `Recorded tour · ${i + 1} of ${n}`;
+    el('cap-step').textContent = `Tour · ${i + 1} of ${n}`;
     el('cap-title').textContent = title;
     el('cap-text').textContent = text;
     // fade the new caption in

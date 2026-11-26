@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { measure, reservoirRows, slowestLargeFires, summarise, usableRuns } from '../src/plan/analysis.ts';
+import { levelFinding, measure, reservoirRows, slowestLargeFires, summarise, usableRuns } from '../src/plan/analysis.ts';
 import { CLASSES } from '../src/plan/model.ts';
 import { assembleRegion } from '../src/plan/region.ts';
 import type { FeatureCollection, FireProps, MultiPolygonGeometry, ObservedFile, Observation, RegionInfo, WaterProps } from '../src/plan/types.ts';
@@ -178,4 +178,31 @@ test('reservoir rows count months below the threshold and drop reservoirs too sh
   assert.equal(row?.monthsBelow, 2); // 1,700 m and 900 m
   assert.equal(row?.mappedRunM, 2000);
   assert.equal(reservoirRows(region, 2500).length, 0);
+});
+
+const gauged = (level_m: number, run_m: number): Observation => ({ ...observation(`level-${level_m}`, run_m, 0.5), level_m, fill_pct: level_m - 500 });
+
+test('a reservoir with no gauge readings has no level finding', () => {
+  assert.deepEqual(levelFinding([observation('2021-01-01', 2000, 0.9)], 1852), { kind: 'ungauged' });
+});
+
+test('long enough at every level seen: reports the lowest level observed', () => {
+  const finding = levelFinding([gauged(600, 2100), gauged(591, 2050), gauged(620, 2500)], 1852);
+  assert.equal(finding.kind, 'always');
+  assert.equal(finding.kind === 'always' && finding.lowest.level_m, 591);
+});
+
+test('too short at every level seen: reports the highest level observed', () => {
+  const finding = levelFinding([gauged(770, 900), gauged(803, 1630)], 1852);
+  assert.equal(finding.kind, 'never');
+  assert.equal(finding.kind === 'never' && finding.highest.level_m, 803);
+});
+
+test('the dividing level is the highest at which the run was seen too short', () => {
+  // 1,900 m at 580 looks long, but the run was seen too short higher up, at 590: be cautious.
+  const finding = levelFinding([gauged(580, 1900), gauged(590, 1500), gauged(596, 1900), gauged(610, 2400)], 1852);
+  assert.equal(finding.kind, 'threshold');
+  if (finding.kind !== 'threshold') return;
+  assert.equal(finding.shortAt.level_m, 590);
+  assert.equal(finding.longFrom?.level_m, 596);
 });

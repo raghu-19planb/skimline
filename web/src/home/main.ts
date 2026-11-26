@@ -64,7 +64,44 @@ function showCoverage(manifest: Manifest): void {
   });
 
   const planned = manifest.planned ?? [];
+  showRegionMenu(manifest);
   if (planned.length) setHtml(el('planned'), html`<b>Planned next:</b> ${planned.map((p) => p.name).join(' · ')}`);
+}
+
+/** "Spain", "Spain and Canada", "Spain, Canada and Portugal". */
+const listOf = (names: string[]): string => (names.length < 3 ? names.join(' and ') : `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`);
+
+/**
+ * The drop-down in the hero: every region that is live, grouped by country, then the
+ * ones in the queue, marked "coming soon" so a visitor can see their area is on the way.
+ */
+function showRegionMenu(manifest: Manifest): void {
+  const planned = manifest.planned ?? [];
+  const countries = [...new Set([...manifest.regions, ...planned].map((r) => r.country))];
+  const liveCountries = [...new Set(manifest.regions.map((r) => r.country))].map((code) => COUNTRY[code] ?? code);
+  el('hook-live').textContent = `Live now for ${listOf(liveCountries)}.`;
+
+  const short = (name: string) => name.replace(/, (Spain|Canada)$/, '');
+  setHtml(
+    el('region-menu-list'),
+    html`${countries.map(
+      (code) =>
+        html`<p class="country">${COUNTRY[code] ?? code}</p>
+          ${manifest.regions
+            .filter((r) => r.country === code)
+            .map((r) => html`<a href="/plan.html?region=${encodeURIComponent(r.id)}"><span>${short(r.name)}</span><em class="live-tag">live</em></a>`)}
+          ${planned.filter((r) => r.country === code).map((r) => html`<span class="soon"><span>${short(r.name)}</span><em>coming soon</em></span>`)}`,
+    )}`,
+  );
+
+  // close the menu when the visitor clicks elsewhere or presses Escape
+  const menu = el<HTMLDetailsElement>('region-menu');
+  document.addEventListener('click', (event) => {
+    if (menu.open && !menu.contains(event.target as Node)) menu.open = false;
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') menu.open = false;
+  });
 }
 
 // ---------- boot ----------

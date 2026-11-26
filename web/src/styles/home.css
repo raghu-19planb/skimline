@@ -183,12 +183,154 @@ section {
 .hero-text > :nth-child(4) {
   animation-delay: 0.36s;
 }
+.hero-text > :nth-child(5) {
+  animation-delay: 0.48s;
+}
+/* the line above the headline: what this is, with a "live" light */
 .eyebrow {
-  margin: 0 0 14px;
-  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 18px;
+  padding: 8px 16px 8px 12px;
+  border: 1px solid rgb(255 255 255 / 0.35);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.14);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  font-size: clamp(14px, 1.5vw, 17px);
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+}
+.eyebrow .live {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #5fe08f;
+  animation: live 2s ease-out infinite;
+}
+@keyframes live {
+  from {
+    box-shadow: 0 0 0 0 rgb(95 224 143 / 0.7);
+  }
+  to {
+    box-shadow: 0 0 0 12px rgb(95 224 143 / 0);
+  }
+}
+.hook {
+  margin: 20px 0 0;
+  font-size: clamp(16px, 1.7vw, 20px);
+  color: rgb(255 255 255 / 0.85);
+}
+.hook strong {
+  color: #fff;
+}
+
+/* region drop-down in the hero: opens upward, a vertical list */
+.region-menu {
+  position: relative;
+}
+.region-menu summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 22px;
+  border: 1px solid rgb(255 255 255 / 0.55);
+  border-radius: 999px;
+  background: rgb(10 20 25 / 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #fff;
+  font-size: 17px;
   font-weight: 500;
-  letter-spacing: 0.02em;
-  color: rgb(255 255 255 / 0.8);
+  list-style: none;
+  cursor: pointer;
+  transition:
+    background var(--fast),
+    border-color var(--fast);
+}
+.region-menu summary::-webkit-details-marker {
+  display: none;
+}
+.region-menu summary::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  margin-top: -4px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform var(--medium) var(--ease);
+}
+.region-menu[open] summary::after {
+  margin-top: 4px;
+  transform: rotate(225deg);
+}
+.region-menu summary:hover {
+  border-color: #fff;
+  background: rgb(10 20 25 / 0.75);
+}
+.region-menu .menu {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 10px);
+  z-index: 5;
+  width: min(360px, calc(100vw - 44px));
+  max-height: min(44svh, 400px);
+  overflow-y: auto;
+  padding: 8px;
+  border-radius: var(--r-m);
+  background: rgb(255 255 255 / 0.97);
+  color: var(--ink);
+  box-shadow: 0 20px 50px rgb(0 0 0 / 0.4);
+  animation: rise var(--medium) var(--ease) both;
+}
+.region-menu .country {
+  margin: 8px 10px 4px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--water);
+}
+.region-menu .menu a,
+.region-menu .soon {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 10px;
+  border-radius: var(--r-s);
+  font-size: 15px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.region-menu .menu a {
+  font-weight: 600;
+  transition: background var(--fast);
+}
+.region-menu .menu a:hover {
+  background: var(--water-soft);
+}
+.region-menu .soon {
+  color: var(--mute);
+}
+.region-menu em {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--mist);
+  font-size: 11.5px;
+  font-style: normal;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.region-menu em.live-tag {
+  background: #dcf5e6;
+  color: #17713c;
 }
 .hero h1 {
   margin: 0;

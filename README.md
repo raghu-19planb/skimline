@@ -25,6 +25,8 @@ pipeline/            Node scripts that build the data (no Python needed)
   03-fetch-fires.mjs   fire perimeters (NBAC for Canada, EFFIS for Europe)
   05-observe.mjs       monthly Sentinel-2 water and run per reservoir
   06-hero-images.mjs   true-colour satellite stills for the home page
+  07-levels.mjs        official gauge levels, known-deep runs, fill history
+  experiments/         one-off investigations, kept so they can be repeated
   04-manifest.mjs      index the site reads (run last)
   lib/ test/           geometry and raster code, unit tests
 web/                 the site (Vite, strict TypeScript, MapLibre)

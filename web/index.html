@@ -28,13 +28,18 @@
       <div class="shots" id="shots" aria-hidden="true"></div>
       <div class="scrim"></div>
       <div class="hero-text">
-        <p class="eyebrow">Open-data wildfire planning · Spain and Canada</p>
+        <p class="eyebrow"><span class="live" aria-hidden="true"></span>Open-data wildfire planning</p>
         <h1>Water bombers<br />need water.</h1>
         <p class="line" aria-live="polite"><span id="hero-line"></span></p>
         <div class="cta">
+          <details class="region-menu" id="region-menu">
+            <summary>Choose a region</summary>
+            <div class="menu" id="region-menu-list"></div>
+          </details>
           <a class="pill big" href="/plan.html">Start planning</a>
           <a class="pill big ghost" href="#tour">Watch the tour</a>
         </div>
+        <p class="hook"><strong id="hook-live">Live now for Spain and Canada.</strong> More regions are coming soon. Is yours next?</p>
       </div>
       <div class="hero-foot">
         <div class="dots" id="shot-dots"></div>
@@ -133,20 +138,20 @@
       <section class="tour" id="tour">
         <div class="head">
           <p class="kicker reveal">03 · Watch it work</p>
-          <h2 class="reveal">A recorded tour of the real map.</h2>
+          <h2 class="reveal">A tour of this website.</h2>
           <p class="sub reveal">About a minute. Nothing to click.</p>
         </div>
         <div class="player reveal" id="player">
           <!-- Captions sit above the screen so they are always in view while it plays. -->
           <div class="caption" id="caption" aria-live="polite">
-            <p class="step" id="cap-step">Recorded tour</p>
+            <p class="step" id="cap-step">Tour</p>
             <h3 id="cap-title">Seven moments, one minute</h3>
             <p class="text" id="cap-text">It plays by itself. Pause whenever you like.</p>
           </div>
           <div class="progress" id="progress"></div>
           <div class="chrome"><i></i><i></i><i></i><span>skimline · start planning</span></div>
           <div class="screen" id="screen">
-            <button class="poster" id="poster" type="button" aria-label="Play the recorded tour">
+            <button class="poster" id="poster" type="button" aria-label="Play the tour">
               <span class="play"
                 ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg
               ></span>
