@@ -29,7 +29,7 @@ pipeline/   Node scripts that build the data (no Python needed)
 web/        the site (Vite, TypeScript, MapLibre)
   src/model.ts         the analytical model, with sources
   public/data/         pipeline output the site loads
-docs/       roadmap and outreach notes
+docs/       roadmap
 data/raw/   downloads (not committed)
 ```
 
@@ -62,3 +62,7 @@ The site is static. On Vercel, import the repository; `vercel.json` sets the bui
 - Fire perimeters: National Burned Area Composite, Natural Resources Canada (Open Government Licence – Canada); EFFIS, European Commission (CC BY 4.0).
 - Imagery: Copernicus Sentinel-2, via Earth Search STAC.
 - Basemap: OpenFreeMap / OpenMapTiles / OpenStreetMap.
+
+## Licence
+
+Code: MIT, see `LICENSE`. Data layers keep the licences listed above.
