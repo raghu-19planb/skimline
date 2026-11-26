@@ -35,7 +35,11 @@ export const PLANNED = [
 // Analysis parameters. Every value that is an assumption rather than a sourced
 // figure is marked so the site can show it honestly.
 export const PARAMS = {
-  corridorWidthM: 100, // ASSUMPTION: clear water width required along the run
+  // Clear water widths every run is measured at, metres. The first is the default: slightly
+  // more than the 91 m minimum width used by Natural Resources Canada authors. The wider
+  // ones exist because a drawn-down reservoir can stay long while becoming too narrow
+  // (see experiments/width-sensitivity.mjs). Which width a crew needs is not sourced.
+  corridorWidthsM: [100, 150, 200, 250, 300],
   minRunKeptM: 400, // water bodies whose longest run is shorter are dropped from the output
   directionStepDeg: 3,
 };
@@ -43,12 +47,13 @@ export const PARAMS = {
 // Official water-level gauges, by region. `match` picks the reservoir by its mapped name.
 // Used by 07-levels.mjs to turn satellite observations into levels and known depths.
 const ACA = 'Agència Catalana de l’Aigua, open data (daily level and volume, since 2000)';
+// `api` names the service, so the site knows it can also read today's level from it.
 export const GAUGES = {
   'es-catalonia': [
-    { match: /Baells/, station: 'Embassament de la Baells (Cercs)', source: ACA },
-    { match: /Llosa del Cavall/, station: 'Embassament de la Llosa del Cavall (Navès)', source: ACA },
-    { match: /Sau/, station: 'Embassament de Sau (Vilanova de Sau)', source: ACA },
-    { match: /Sant Ponç/, station: 'Embassament de Sant Ponç (Clariana de Cardener)', source: ACA },
-    { match: /Susqueda/, station: 'Embassament de Susqueda (Osor)', source: ACA },
+    { match: /Baells/, station: 'Embassament de la Baells (Cercs)', source: ACA, api: 'aca' },
+    { match: /Llosa del Cavall/, station: 'Embassament de la Llosa del Cavall (Navès)', source: ACA, api: 'aca' },
+    { match: /Sau/, station: 'Embassament de Sau (Vilanova de Sau)', source: ACA, api: 'aca' },
+    { match: /Sant Ponç/, station: 'Embassament de Sant Ponç (Clariana de Cardener)', source: ACA, api: 'aca' },
+    { match: /Susqueda/, station: 'Embassament de Susqueda (Osor)', source: ACA, api: 'aca' },
   ],
 };

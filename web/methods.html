@@ -229,8 +229,62 @@
         lacked a safe enough water surface.
       </p>
       <p>
-        This is one reservoir and four dates, so it is a lead, not a finding. The width a crew actually needs is a judgement we have not confirmed with one. The
-        map still uses the 100 m corridor; making the clear width a setting beside the run length is the next step. The experiment can be repeated with
+        We then looked at all three reservoirs reported as unusable by amphibious aircraft that spring. The run on the first clear image of April 2023, in
+        metres, at each clear width:
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Reservoir</th>
+              <th>Percent full</th>
+              <th>100 m wide</th>
+              <th>150 m</th>
+              <th>200 m</th>
+              <th>250 m</th>
+              <th>300 m</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>La Baells</td>
+              <td>26 %</td>
+              <td>2,120</td>
+              <td>2,020</td>
+              <td>1,420</td>
+              <td>690</td>
+              <td>320</td>
+            </tr>
+            <tr>
+              <td>La Llosa del Cavall</td>
+              <td>26 %</td>
+              <td>930</td>
+              <td>490</td>
+              <td>270</td>
+              <td>60</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <td>Sau</td>
+              <td>7 %</td>
+              <td>2,290</td>
+              <td>2,090</td>
+              <td>1,980</td>
+              <td>1,870</td>
+              <td>1,780</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        <strong>Sau does not fit.</strong> At 7 % of capacity it still measures a long, wide, and by our check deep run, yet it too was reported as lost to
+        firefighting aircraft. Our evidence for Sau is a headline only, so we do not know the stated reason or which aircraft it referred to. But on what we can
+        measure, neither length, width nor depth explains it. Two of three is not a method that can be relied on.
+      </p>
+      <p>
+        So this remains a lead, not a finding. The width a crew actually needs is a judgement we have not confirmed with one. Because of it, the clear width is
+        now a setting in step 2 of the planning page: 100, 150, 200, 250 or 300 m, with every run, mapped and observed, measured at each. It starts at 100 m,
+        near the published minimum, because the width a crew needs is not something we have confirmed. The experiment can be repeated with
         <code>pipeline/experiments/width-sensitivity.mjs</code>.
       </p>
 
@@ -266,9 +320,9 @@
             </tr>
             <tr>
               <td>Clear corridor width</td>
-              <td>100 m</td>
+              <td>100 to 300 m, set by the visitor; starts at 100 m</td>
               <td><span class="flag asm">assumption</span></td>
-              <td>Slightly stricter than the 300 ft (91 m) minimum width in Wotton &amp; Jurko</td>
+              <td>100 m is slightly stricter than the 300 ft (91 m) minimum width in Wotton &amp; Jurko. The width a crew needs is not sourced</td>
             </tr>
             <tr>
               <td>Minutes per load</td>
@@ -338,7 +392,14 @@
           </tbody>
         </table>
       </div>
-      <p>Fire perimeters are fires of 100 ha or more since 2016. A fire is placed at the centre of its largest mapped part.</p>
+      <p>
+        Fire perimeters are fires of 100 ha or more since 2016. A fire is placed at the centre of its largest mapped part. Where fewer than ten fall inside a
+        region's analysis area, the page does not give a share of burned area: with so few, one large fire decides the figure.
+      </p>
+      <p>
+        Distance is measured to each water body's single longest run, not to the nearest stretch that would do. In a long reservoir that can overstate the
+        distance, and the longest run can sit in a different arm from one satellite image to the next. Treat differences of a minute or two as noise.
+      </p>
 
       <h2>What this cannot tell you</h2>
       <ul>

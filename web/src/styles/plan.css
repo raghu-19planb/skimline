@@ -756,35 +756,65 @@ body.demo #app {
   color: #dfe7ea;
 }
 
-/* ---------- phone: map on top, steps below ---------- */
+/* ---------- phone: one column; the map sits under the region step and stays in view ---------- */
 @media (max-width: 820px) {
+  html,
+  body {
+    height: auto;
+  }
   #app {
-    grid-template-columns: 1fr;
-    grid-template-rows: 52svh 1fr;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+  }
+  /* The panel's children join the page's own column, so the map can sit between them. */
+  #panel {
+    display: contents;
+  }
+  #panel > * {
+    order: 3;
+    margin-inline: 14px;
+  }
+  #panel > header {
+    order: 0;
+    margin-top: 16px;
+  }
+  #panel > #region-row {
+    order: 1;
   }
   main {
-    grid-row: 1;
+    order: 2;
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    height: 48svh;
+    min-height: 300px;
+    margin-top: 14px;
+    box-shadow: 0 6px 16px rgb(0 0 0 / 0.12);
   }
-  #panel {
-    grid-row: 2;
-    padding: 16px;
-    border-right: 0;
-    border-top: 1px solid var(--line);
+  /* a step scrolled to by the guide stops just below the map, not under it */
+  .step {
+    scroll-margin-top: calc(48svh + 26px);
+  }
+  .panel-foot {
+    margin-bottom: 28px;
   }
   .readout {
-    right: 10px;
-    left: 10px;
-    bottom: 10px;
+    right: 8px;
+    left: 8px;
+    bottom: 8px;
     width: auto;
+    max-height: calc(100% - 16px);
+    padding: 10px 12px;
   }
   body.touring .readout {
     top: 8px;
-    right: 8px;
-    left: 8px;
-    padding: 10px 12px;
+    bottom: auto;
+    max-height: 46%;
   }
   .tour {
-    bottom: 8px;
+    bottom: 6px;
+    max-height: calc(100% - 12px);
     padding: 12px 14px 10px;
   }
   .tour p {
@@ -866,4 +896,62 @@ body.demo #app {
   height: 7px;
   border-radius: 50%;
   background: var(--water);
+}
+
+/* step 1: the note belongs to the selected region, and says so */
+.about {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--water);
+  border-radius: 0 var(--r-s) var(--r-s) 0;
+  background: var(--water-soft);
+}
+.about p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink);
+}
+.about .about-label {
+  margin-bottom: 3px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--water);
+}
+.step h3:first-of-type {
+  margin-top: 0;
+}
+
+/* shown over the map the moment a region is chosen */
+.loading {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 4;
+  margin: 0;
+  padding: 10px 18px;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background: rgb(21 35 43 / 0.9);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: var(--shadow-card);
+  animation: rise var(--medium) var(--ease) both;
+}
+
+/* today's gauge reading: the one figure on the page that is current to the day */
+.today:empty {
+  display: none;
+}
+.readout .today,
+.pick-list .today {
+  margin-top: 4px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: var(--water-soft);
+  color: var(--ink);
+  font-size: 12.5px;
 }

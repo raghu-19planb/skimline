@@ -4,7 +4,8 @@ import type { FireAccess, ReservoirRow, Summary } from './analysis.ts';
 import { button, el, setHtml } from './dom.ts';
 import { fmt, html, monthYear, pct } from './format.ts';
 import { CLASSES } from './model.ts';
-import { levelSentence } from './readout.ts';
+import { fillToday, levelSentence } from './readout.ts';
+import { runAt, widthLabel } from './widths.ts';
 import { sparkline } from './charts.ts';
 import type { Manifest, Region, RegionInfo, Scenario } from './types.ts';
 
@@ -62,12 +63,12 @@ export function renderRegionSelect(manifest: Manifest, onPick: (id: string) => v
   select.addEventListener('change', () => {
     if (select.value) onPick(select.value);
   });
-  el('coverage').textContent = `${manifest.regions.length} regions built, ${planned.length} planned.`;
 }
 
 export function showRegionInfo(info: RegionInfo, region: Region): void {
   el<HTMLSelectElement>('region-select').value = info.id;
   el('region-note').textContent = info.note;
+  el('region-name').textContent = info.name;
   const day = (iso: string) => iso.slice(0, 10);
   const parts = [`Water: ${info.water.source}, fetched ${day(info.water.fetched)}.`];
   if (region.observedMeta) parts.push(`Observed water: ${region.observedMeta.source}.`);
@@ -84,10 +85,25 @@ export function showThreshold(metres: number): void {
   }
 }
 
-export function showScenario(scenario: Scenario, available: boolean): void {
+/** One line under the switch saying what the chosen state means, with the dates it rests on. */
+function scenarioNote(scenario: Scenario, region: Region): string {
+  if (scenario === 'mapped') return 'Every water body at the size it is drawn on the map, which for a reservoir is usually full.';
+  if (scenario === 'dry') return 'Each measured reservoir at its own lowest month. These were not all the same month, so this is a stress test, not one date.';
+  const dates = [...region.observed.values()].map((record) => record.latest.date).sort();
+  const first = dates[0];
+  const last = dates.at(-1);
+  if (!first || !last) return '';
+  const range = monthYear(first) === monthYear(last) ? monthYear(last) : `${monthYear(first)} to ${monthYear(last)}`;
+  return `Each measured reservoir as last seen from space: ${range}. Water bodies that are not measured stay as mapped.`;
+}
+
+export function showScenario(scenario: Scenario, region: Region): void {
+  const available = region.observed.size > 0;
   el('scenario').hidden = !available;
   el('observed').hidden = !available;
   el('dry-none').hidden = available;
+  el('scenario-note').hidden = !available;
+  el('scenario-note').textContent = scenarioNote(scenario, region);
   for (const btn of el('scenario').querySelectorAll<HTMLButtonElement>('button')) {
     btn.setAttribute('aria-pressed', String(btn.dataset.scenario === scenario));
   }
@@ -112,12 +128,31 @@ export function renderSummary(now: Summary, full: Summary | null): void {
       </div>
       <div class="stat">
         <b>${was(full && far(full))}${far(now) ?? '–'}</b>
-        <span>of burned area over ${FAR_MINUTES} min per load</span>
+        <span
+          >${now.burnedFarShare === null ? `too few fires here to judge (${now.fireCount} mapped)` : `of burned area over ${FAR_MINUTES} min per load`}</span
+        >
       </div>`,
   );
 }
 
-export function renderReservoirs(region: Region, rows: ReservoirRow[], threshold: number, onPick: (body: number) => void): void {
+/** One chip per clear width the runs were measured at. */
+export function renderWidths(widths: number[], onPick: (index: number) => void): void {
+  const box = el('widths');
+  box.replaceChildren();
+  widths.forEach((metres, index) => {
+    const btn = button(html`${widthLabel(metres)}`, () => onPick(index));
+    btn.dataset.width = String(index);
+    box.append(btn);
+  });
+}
+
+export function showWidth(index: number): void {
+  for (const btn of el('widths').querySelectorAll<HTMLButtonElement>('button')) {
+    btn.setAttribute('aria-pressed', String(Number(btn.dataset.width) === index));
+  }
+}
+
+export function renderReservoirs(region: Region, rows: ReservoirRow[], threshold: number, width: number, onPick: (body: number) => void): void {
   const years = region.observedMeta?.years;
   const fellShort = rows.filter((row) => row.monthsBelow > 0).length;
   setHtml(
@@ -137,16 +172,19 @@ export function renderReservoirs(region: Region, rows: ReservoirRow[], threshold
       button(
         html`<span class="t">${waterName(region, row.body)}</span>
           <span class="m ${row.monthsBelow ? '' : 'ok'}">${row.monthsBelow ? `${row.monthsBelow} of ${record.series.length} months` : 'never'}</span>
-          ${sparkline(record.series, row.mappedRunM, threshold, 300, 44)}
+          ${sparkline(record.series, row.mappedRunM, threshold, width, 300, 44)}
           <span class="s"
-            >${record.gauge ? `${levelSentence(levelFinding(record.series, threshold), threshold)} ` : ''}Shortest run: ${fmt(record.driest.run_m)} m in
-            ${monthYear(record.driest.date)} · mapped ${fmt(row.mappedRunM)} m · water down to ${pct(record.lowestSurface.water_share)} of its full area</span
-          >`,
+            >${record.gauge ? `${levelSentence(levelFinding(record.series, threshold, width), threshold)} ` : ''}Shortest run: ${fmt(runAt(row.driest, width))} m in ${monthYear(row.driest.date)} · mapped ${fmt(row.mappedRunM)} m · water down to ${pct(record.lowestSurface.water_share)} of its full area</span
+          >${record.gauge?.api ? html`<span class="s today" data-station="${record.gauge.station}"></span>` : ''}`,
         () => onPick(row.body),
       ),
     );
     list.append(item);
   }
+  const findings = new Map(
+    rows.filter((row) => row.record.gauge).map((row) => [row.record.gauge?.station ?? '', levelFinding(row.record.series, threshold, width)]),
+  );
+  void fillToday(list, (station) => findings.get(station) ?? null);
 }
 
 export function renderFires(region: Region, fires: FireAccess[], minHa: number, onPick: (fire: FireAccess) => void): void {
@@ -165,7 +203,7 @@ export function renderFires(region: Region, fires: FireAccess[], minHa: number, 
     item.append(
       button(
         html`<span class="t">${fire.props.place ?? 'Fire'} · ${fire.props.year}</span>
-          <span class="m">${access ? `${fmt(access.minutes, 1)} min` : 'no water'}</span>
+          <span class="m">${access ? `≈ ${fmt(access.minutes)} min` : 'no water'}</span>
           <span class="s">${fmt(fire.props.ha)} ha burned${access ? ` · ${fmt(access.distKm, 1)} km from ${waterName(region, access.run.body)}` : ''}</span>`,
         () => onPick(entry),
       ),

@@ -20,7 +20,7 @@ export interface RegionInfo {
 
 export interface Manifest {
   built: string;
-  params: { corridorWidthM: number; minRunKeptM: number };
+  params: { corridorWidthsM?: number[]; minRunKeptM: number };
   regions: RegionInfo[];
   planned?: { name: string; country: string }[];
 }
@@ -39,10 +39,16 @@ export interface Observation {
   fill_pct?: number | null;
   /** Run known to be at least the minimum depth deep; null where that cannot be known. */
   deep_run_m?: number | null;
+  /** The run at each clear width in the file's `widths`: [metres, lon, lat, lon, lat]. */
+  runs_w?: [number, number, number, number, number][];
+  /** The known-deep run at each clear width. */
+  deep_runs_w?: (number | null)[];
 }
 
 /** The official water-level gauge of a reservoir. */
 export interface Gauge {
+  /** Which open-data service publishes it; decides whether today's level can be read live. */
+  api?: 'aca';
   station: string;
   source: string;
   first: string | null;
@@ -50,7 +56,7 @@ export interface Gauge {
 }
 
 export interface ObservedFile {
-  meta: { source: string; years: [number, number]; depth?: { min_depth_m: number; method: string } };
+  meta: { source: string; years: [number, number]; widths?: number[]; depth?: { min_depth_m: number; method: string } };
   reservoirs: {
     id: string;
     name: string | null;
@@ -70,8 +76,14 @@ export interface WaterProps {
   run_m: number;
   bearing: number;
   run: RunLine;
-  /** Run in the driest observed month. Added on load; equals run_m where the water body was not observed. */
-  run_dry: number;
+  /** The run at each clear width in the file's `widths`: [metres, bearing, lon, lat, lon, lat]. */
+  runs_w?: [number, number, number, number, number, number][];
+  /** Added on load for the map's filters: the mapped run at width index N, metres. */
+  [mapped: `r${number}`]: number | undefined;
+  /** Added on load: the run at width index N in the reservoir's driest observed month. */
+  [driest: `d${number}`]: number | undefined;
+  /** Added on load: the run at width index N in the reservoir's most recent image. */
+  [latest: `l${number}`]: number | undefined;
 }
 
 export interface FireProps {
@@ -97,14 +109,17 @@ export interface Feature<P, G = PolygonGeometry | MultiPolygonGeometry> {
 }
 export interface FeatureCollection<P, G = PolygonGeometry | MultiPolygonGeometry> {
   type: 'FeatureCollection';
+  meta?: { widths?: number[] };
   features: Feature<P, G>[];
 }
 
-/** A reservoir's satellite record, with the two observations the interface quotes most. */
+/** A reservoir's satellite record. */
 export interface ReservoirRecord {
   series: Observation[];
-  /** Observation with the shortest usable run. */
-  driest: Observation;
+  /** Observation with the shortest usable run, at each clear width. */
+  driest: Observation[];
+  /** The most recent observation. */
+  latest: Observation;
   /** Observation with the least water surface: the clearest sign of drawdown, independent of run length. */
   lowestSurface: Observation;
   gauge: Gauge | null;
@@ -126,10 +141,14 @@ export interface Region {
   frame: Frame;
   water: FeatureCollection<WaterProps>;
   fires: FeatureCollection<FireProps, MultiPolygonGeometry> | null;
-  /** One run per water body, in the order of `water.features`. */
-  runs: Run[];
-  /** The same, with each observed reservoir at its driest observed month. */
-  dryRuns: Run[];
+  /** Clear widths the runs were measured at, metres. Settings refer to these by index. */
+  widths: number[];
+  /** For each width: one run per water body, in the order of `water.features`. */
+  runs: Run[][];
+  /** The same, with each observed reservoir at its driest observed month for that width. */
+  dryRuns: Run[][];
+  /** The same, with each observed reservoir as in its most recent satellite image. */
+  latestRuns: Run[][];
   /** Satellite records, keyed by index into `water.features`. */
   observed: Map<number, ReservoirRecord>;
   observedMeta: ObservedFile['meta'] | null;
@@ -142,4 +161,10 @@ export interface Region {
   area: BBox;
 }
 
-export type Scenario = 'mapped' | 'dry';
+/**
+ * Which state of the water the page shows:
+ *  mapped  every water body as drawn on the map, usually full
+ *  latest  each observed reservoir as in its most recent satellite image
+ *  dry     each observed reservoir at its own driest observed month
+ */
+export type Scenario = 'mapped' | 'latest' | 'dry';

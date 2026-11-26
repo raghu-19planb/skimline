@@ -14,19 +14,20 @@
 /**
  * @param {{date: string, run_m: number, level_m?: number | null}[]} series observations of one reservoir
  * @param {number} minDepthM depth an aircraft needs
+ * @param {(o: object) => number} [runOf] which run to use, e.g. the run at a wider clear corridor
  * @returns {{deep_run_m: number | null, deep_ref: string | null}[]} one entry per observation, in order.
  *   deep_run_m is null where no observation exists at a level low enough to say anything.
  */
-export function knownDeepRuns(series, minDepthM) {
+export function knownDeepRuns(series, minDepthM, runOf = (o) => o.run_m) {
   const gauged = series.filter((o) => typeof o.level_m === 'number');
   return series.map((today) => {
     if (typeof today.level_m !== 'number') return { deep_run_m: null, deep_ref: null };
     let best = null;
     for (const earlier of gauged) {
       if (earlier.level_m > today.level_m - minDepthM) continue; // not low enough to prove the depth
-      if (!best || earlier.run_m > best.run_m) best = earlier;
+      if (!best || runOf(earlier) > runOf(best)) best = earlier;
     }
     // The run cannot be longer than the water present today.
-    return best ? { deep_run_m: Math.min(best.run_m, today.run_m), deep_ref: best.date } : { deep_run_m: null, deep_ref: null };
+    return best ? { deep_run_m: Math.min(runOf(best), runOf(today)), deep_ref: best.date } : { deep_run_m: null, deep_ref: null };
   });
 }

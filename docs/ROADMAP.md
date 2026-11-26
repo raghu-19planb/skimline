@@ -13,7 +13,7 @@ Ordered by how much each step would matter to the people we want to show this to
 ## Next: make the drought finding defensible
 
 1. **Tested against a documented case: done.** Catalonia, April 2023: amphibious aircraft could not use La Baells at 26 % of capacity. Run length did not predict it (2,120 m that day), and neither did depth (that run was known to be over 1.8 m deep). A width experiment did: with a 200 m clear corridor the run was 2,250 m when full and 1,420 m on the day it was closed.
-1a. **Clear width as a setting. Next.** Measure every run, mapped and observed, at several corridor widths, and let the visitor set the width beside the run length. Confirm with an aerial firefighting crew what width they actually need. *Who: fire agencies.*
+1a. **Clear width as a setting: done.** Every run, mapped and observed, is measured at 100, 150, 200, 250 and 300 m, and the visitor sets the width in step 2. Still open: confirm with an aerial firefighting crew what width they actually need, and make that the default. *Who: fire agencies.*
 1b. **Depth from water level: done for gauged reservoirs.** Where an official gauge exists (Catalonia), each observation carries the level and percent of capacity, the run known to be at least 1.8 m deep, and the level below which the run is lost. Next: connect the SAIH gauges of the Miño-Sil, Duero and Ebro basins. *Who: basin authorities, fire agencies, researchers.*
 2. **Validate against gauges.** Compare observed water share with official weekly reservoir storage (Spanish ministry hydrological bulletin). *Who: basin authorities.*
 3. **The level that matters: done where gauged.** For each gauged reservoir, the level below which the run is lost, shown in its card. *Who: basin authorities, dam operators.*

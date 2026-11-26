@@ -12,9 +12,11 @@
 import { setHtml } from './dom.ts';
 import { html } from './format.ts';
 
+import type { Scenario } from './types.ts';
+
 export interface DemoApi {
   setThreshold(m: number): void;
-  setScenario(s: 'mapped' | 'dry'): void;
+  setScenario(s: Scenario): void;
   hasObserved(): boolean;
   /** A good place to measure, as lon/lat. */
   demoPlace(): [number, number];
@@ -135,14 +137,18 @@ const ACTS: Act[] = [
     },
   },
   {
-    title: 'Now test a dry year',
-    text: 'One click puts each satellite-measured reservoir at its lowest month since 2021. The crossed-out figures are the full-reservoir values.',
+    title: 'See it as last seen, then in a dry year',
+    text: '"Latest image" shows each measured reservoir as it last looked from space. "Driest month" puts each at its lowest. The crossed-out figures are the mapped values.',
     skip: (api) => !api.hasObserved(),
     hold: 7500,
     play: async (api, c) => {
       focus(null);
       api.clearProbe();
-      await c.toEl('#scenario button[data-scenario="dry"]', 1400);
+      await c.toEl('#scenario button[data-scenario="latest"]', 1400);
+      await c.click();
+      api.setScenario('latest');
+      await wait(2600);
+      await c.toEl('#scenario button[data-scenario="dry"]', 900);
       await c.click();
       api.setScenario('dry');
       await wait(900);

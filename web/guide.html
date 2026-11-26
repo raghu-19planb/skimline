@@ -39,7 +39,9 @@
           from it.
         </li>
         <li><strong>Click any spot</strong> to get its numbers: the nearest usable water, minutes per load, loads an hour and litres an hour.</li>
-        <li><strong>Switch to "Driest month seen"</strong> (where reservoirs have been observed) to see what is lost when reservoirs are drawn down.</li>
+        <li>
+          <strong>Switch to "Latest image" or "Driest month"</strong> (where reservoirs have been observed) to see them as they last looked, or at their lowest.
+        </li>
       </ol>
 
       <h2>The controls</h2>
@@ -83,12 +85,19 @@
       </ul>
       <p>As you move the slider, water bodies that are too short turn grey and the whole map recalculates.</p>
 
-      <h3>Water level: "As mapped" or "Driest month seen"</h3>
+      <h3>Clear width of water</h3>
+      <p>
+        Below the slider, choose how wide the open water must be along that run: 100, 150, 200, 250 or 300 m. It starts at 100 m, close to the published
+        minimum. A reservoir that has been drawn down can stay long while becoming too narrow, so a wider setting is the more cautious test in a dry year. The
+        reservoir charts, the dry-year view and every figure on the page follow the width you choose.
+      </p>
+
+      <h3>As mapped, latest image, or driest month</h3>
       <p>
         This appears where reservoirs have been measured from satellite images. "As mapped" uses each reservoir's mapped outline, which is usually its full
-        level. "Driest month seen" puts each observed reservoir at its lowest measured month since 2021. The summary boxes then show the old value struck
-        through beside the new one. The reservoirs did not all reach their lowest in the same month, so read this as a stress test, not as a picture of one
-        date.
+        level. "Latest image" shows each observed reservoir as it last looked from space, and says which months those images are from. "Driest month" puts each
+        observed reservoir at its lowest measured month since 2021. The summary boxes then show the old value struck through beside the new one. The reservoirs
+        did not all reach their lowest in the same month, so read this as a stress test, not as a picture of one date.
       </p>
 
       <h3>The three summary boxes</h3>
@@ -156,13 +165,13 @@
             <tr>
               <td>A reservoir or basin manager</td>
               <td>
-                Open "Reservoirs seen from space" and find the ones that lose their run in dry months. Switch to "Driest month seen" to see how much ground
-                depends on them.
+                Open "Reservoirs seen from space" and find the ones that lose their run in dry months. Switch to "Driest month" to see how much ground depends
+                on them.
               </td>
             </tr>
             <tr>
               <td>A municipality</td>
-              <td>Click your town or the forest beside it. Compare "As mapped" with "Driest month seen".</td>
+              <td>Click your town or the forest beside it. Compare "As mapped" with "Driest month".</td>
             </tr>
             <tr>
               <td>A crew working outside its home region</td>
@@ -189,6 +198,7 @@
       <ul>
         <li><strong>Scooper</strong>: an aircraft that refills by skimming the water surface, such as the Canadair CL-415.</li>
         <li><strong>Run</strong>: the longest straight stretch of open water in a lake or reservoir, with clear water on both sides.</li>
+        <li><strong>Clear width</strong>: how wide that open water must be along the whole run. You set it in step 2.</li>
         <li><strong>Load</strong>: one tank of water dropped on the fire.</li>
         <li><strong>Drawn down</strong>: a reservoir whose level has been lowered by use or drought.</li>
         <li>
@@ -207,6 +217,15 @@
 
       <h2>What's new</h2>
       <ul id="changelog">
+        <li>
+          <strong>November 2026, the present.</strong> Step 4 gains "Latest image", showing each measured reservoir as last seen from space. Gauged reservoirs
+          show today's reading from the gauge and what that level has meant for the run. Minutes per load are now shown as round figures, because the rule
+          behind them is a rough one.
+        </li>
+        <li>
+          <strong>November 2026, clear width.</strong> Step 2 now has a second setting, the clear width of water, alongside the run length. On a phone the map
+          sits directly under the region step and stays in view as you scroll. The note under the region list now says which region it describes.
+        </li>
         <li>
           <strong>November 2026, water level and depth.</strong> For gauged reservoirs in Catalonia: the level below which the run is lost, the run known to be
           deep enough, and how full each has been every month since 2000. Two more reservoirs measured there. On the home page, a region list and a clearer

@@ -23,18 +23,27 @@
         <section class="step" id="region-row" aria-labelledby="s1">
           <h2 id="s1"><span class="num">1</span> Pick your region</h2>
           <select id="region-select" aria-labelledby="s1"></select>
-          <p id="coverage" class="help"></p>
-          <p id="region-note" class="note"></p>
+          <div class="about">
+            <p class="about-label">About <span id="region-name">this region</span></p>
+            <p id="region-note"></p>
+          </div>
         </section>
 
         <section class="step" aria-labelledby="s2">
           <h2 id="s2"><span class="num">2</span> Set what the aircraft needs</h2>
+          <h3 id="run-h">Length of straight run</h3>
           <div class="slider-row">
-            <input id="run" type="range" min="800" max="4100" step="1" value="1852" aria-labelledby="s2" aria-describedby="run-help" />
+            <input id="run" type="range" min="800" max="4100" step="1" value="1852" aria-labelledby="run-h" aria-describedby="run-help" />
             <output id="run-out" for="run"></output>
           </div>
           <div id="presets" class="chips"></div>
-          <p id="run-help" class="help">The straight run of water a scooper needs. Longer at altitude and in heat. Water bodies that are too short drop out.</p>
+          <p id="run-help" class="help">Longer at altitude and in heat. Water bodies that are too short drop out.</p>
+          <h3 id="width-h">Clear width of water</h3>
+          <div id="widths" class="chips" role="group" aria-labelledby="width-h"></div>
+          <p class="help">
+            How wide the open water must be along that run. 100 m is close to the published minimum. A drawn-down reservoir can stay long but become too narrow,
+            so try a wider setting for reservoirs in a dry year.
+          </p>
         </section>
 
         <section class="step" aria-labelledby="s3">
@@ -50,19 +59,21 @@
         </section>
 
         <section class="step" aria-labelledby="s4">
-          <h2 id="s4"><span class="num">4</span> Test a dry year</h2>
+          <h2 id="s4"><span class="num">4</span> See it now, and in a dry year</h2>
           <div id="scenario" class="seg" role="group" aria-label="Water level" hidden>
-            <button type="button" data-scenario="mapped" aria-pressed="true">As mapped (full)</button>
-            <button type="button" data-scenario="dry" aria-pressed="false">Driest month seen</button>
+            <button type="button" data-scenario="mapped" aria-pressed="true">As mapped</button>
+            <button type="button" data-scenario="latest" aria-pressed="false">Latest image</button>
+            <button type="button" data-scenario="dry" aria-pressed="false">Driest month</button>
           </div>
+          <p id="scenario-note" class="help" hidden></p>
           <p id="dry-none" class="note" hidden>No reservoirs have been measured from space in this region yet, so there is no dry-year view here.</p>
           <div id="observed" hidden>
             <h3>Reservoirs seen from space</h3>
             <p id="observed-sum" class="note lead"></p>
             <ol id="observed-list" class="pick-list"></ol>
             <p class="help">
-              Usable run each month, measured on satellite images. Red dots are months below the run required. "Driest month seen" puts each reservoir at its
-              own lowest month; these were not all the same month.
+              Usable run each month, measured on satellite images. Red dots are months below the run required. "Driest month" puts each reservoir at its own
+              lowest month; these were not all the same month.
             </p>
           </div>
         </section>
@@ -88,6 +99,7 @@
 
       <main>
         <div id="map" role="application" aria-label="Map of minutes per load"></div>
+        <p id="loading" class="loading" role="status" hidden></p>
         <div id="readout" class="readout" aria-live="polite" hidden></div>
         <p id="hint" class="hint">Click anywhere to measure that spot</p>
         <div id="tour" class="tour" role="dialog" aria-label="Step-by-step guide" aria-live="polite" hidden></div>

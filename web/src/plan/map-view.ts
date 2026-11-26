@@ -130,8 +130,11 @@ export class MapView {
     );
   }
 
-  /** Redraws everything that depends on the run length and scenario. */
-  update(region: Region, cellClass: Uint8Array, runs: Run[], threshold: number, dry: boolean): void {
+  /**
+   * Redraws everything that depends on the settings. `runs` are the runs to draw, and
+   * `field` names the per-feature property holding their length (see region.ts).
+   */
+  update(region: Region, cellClass: Uint8Array, runs: Run[], threshold: number, field: string): void {
     const half = CELL_KM / 2;
     this.source('grid').setData({
       type: 'FeatureCollection',
@@ -157,7 +160,6 @@ export class MapView {
       }),
     });
 
-    const field = dry ? 'run_dry' : 'run_m';
     this.map.setFilter('water-on', ['>=', ['get', field], threshold]);
     this.map.setFilter('water-on-line', ['>=', ['get', field], threshold]);
     this.map.setFilter('water-off', ['<', ['get', field], threshold]);

@@ -3,24 +3,37 @@
 import { CLASSES, classOf, nearest, toXY } from './model.ts';
 import type { Nearest, Run } from './model.ts';
 import type { FireCentre, Observation, Region, ReservoirRecord, Scenario } from './types.ts';
+import { runAt } from './widths.ts';
 
 /** "Close to water": ten or more loads an hour. */
 export const NEAR_MINUTES = 6;
 /** "Far from water": fewer than about seven loads an hour. */
 export const FAR_MINUTES = 9;
+/**
+ * Fewest fires for which a share of burned area is reported. With a handful of fires one
+ * large perimeter decides the figure, and it swings wildly with small changes.
+ */
+export const MIN_FIRES_FOR_SHARE = 10;
 /** Fires this size or larger are listed individually. */
 export const LARGE_FIRE_HA = 500;
 
 export interface Settings {
   /** Straight run the aircraft needs, metres. */
   threshold: number;
+  /** Clear width of water the aircraft needs, as an index into `region.widths`. */
+  width: number;
   scenario: Scenario;
+}
+
+/** Every water body's run for the scenario and width in the settings. */
+export function runsFor(region: Region, settings: Pick<Settings, 'scenario' | 'width'>): Run[] {
+  const byWidth = settings.scenario === 'dry' ? region.dryRuns : settings.scenario === 'latest' ? region.latestRuns : region.runs;
+  return byWidth[settings.width] ?? [];
 }
 
 /** Runs that are long enough under the given settings. */
 export function usableRuns(region: Region, settings: Settings): Run[] {
-  const runs = settings.scenario === 'dry' ? region.dryRuns : region.runs;
-  return runs.filter((run) => run.lengthM >= settings.threshold);
+  return runsFor(region, settings).filter((run) => run.lengthM >= settings.threshold);
 }
 
 /** Nearest usable water to a point given in degrees. */
@@ -42,12 +55,14 @@ export interface Summary {
   cellClass: Uint8Array;
   /** Share of the analysis area within NEAR_MINUTES per load, 0–1. */
   nearShare: number;
-  /** Share of burned area beyond FAR_MINUTES per load, 0–1; null where no fires are mapped. */
+  /** Share of burned area beyond FAR_MINUTES per load, 0–1; null where too few fires are mapped to say. */
   burnedFarShare: number | null;
+  /** Fires of the mapped size inside the analysis area. */
+  fireCount: number;
   fires: FireAccess[];
 }
 
-export function summarise(region: Region, settings: Settings): Summary {
+export function summarise(region: Region, settings: Settings, minFires = MIN_FIRES_FOR_SHARE): Summary {
   const usable = usableRuns(region, settings);
   const slowest = CLASSES.length - 1;
 
@@ -65,10 +80,11 @@ export function summarise(region: Region, settings: Settings): Summary {
 
   return {
     usableSites: usable.length,
-    measuredSites: region.runs.length,
+    measuredSites: region.water.features.length,
     cellClass,
     nearShare: region.cells.length ? near / region.cells.length : 0,
-    burnedFarShare: burned ? burnedFar / burned : null,
+    burnedFarShare: burned && fires.length >= minFires ? burnedFar / burned : null,
+    fireCount: fires.length,
     fires,
   };
 }
@@ -86,10 +102,12 @@ export interface ReservoirRow {
   /** Index into `region.water.features`. */
   body: number;
   record: ReservoirRecord;
-  /** Run measured on the mapped outline, metres. */
+  /** Run measured on the mapped outline at the chosen width, metres. */
   mappedRunM: number;
   /** Observed months in which the run was shorter than the threshold. */
   monthsBelow: number;
+  /** The observation with the shortest run at the chosen width. */
+  driest: Observation;
 }
 
 /**
@@ -97,15 +115,16 @@ export interface ReservoirRow {
  * fell short most often first. Reservoirs too short even when full are left out: they
  * were never a refill site at this threshold, so they have nothing to lose.
  */
-export function reservoirRows(region: Region, threshold: number): ReservoirRow[] {
+export function reservoirRows(region: Region, threshold: number, width = 0): ReservoirRow[] {
   const rows: ReservoirRow[] = [];
   for (const [body, record] of region.observed) {
-    const mappedRunM = region.runs[body]?.lengthM ?? 0;
-    if (mappedRunM < threshold) continue;
-    rows.push({ body, record, mappedRunM, monthsBelow: record.series.filter((o) => o.run_m < threshold).length });
+    const mappedRunM = region.runs[width]?.[body]?.lengthM ?? 0;
+    const driest = record.driest[width];
+    if (mappedRunM < threshold || !driest) continue;
+    rows.push({ body, record, mappedRunM, driest, monthsBelow: record.series.filter((o) => runAt(o, width) < threshold).length });
   }
   const share = (row: ReservoirRow) => row.monthsBelow / row.record.series.length;
-  return rows.sort((a, b) => share(b) - share(a) || a.record.driest.run_m - b.record.driest.run_m);
+  return rows.sort((a, b) => share(b) - share(a) || runAt(a.driest, width) - runAt(b.driest, width));
 }
 
 /** An observation that has a gauge reading. */
@@ -129,15 +148,39 @@ export type LevelFinding =
  * line is the HIGHEST level at which the run was ever seen too short, so one clear image
  * of a short run outweighs noisier ones at lower levels that happened to look longer.
  */
-export function levelFinding(series: Observation[], threshold: number): LevelFinding {
+export function levelFinding(series: Observation[], threshold: number, width = 0): LevelFinding {
   const gauged = series.filter((o): o is Gauged => typeof o.level_m === 'number');
   if (!gauged.length) return { kind: 'ungauged' };
   const byLevel = (a: Gauged, b: Gauged) => a.level_m - b.level_m;
-  const short = gauged.filter((o) => o.run_m < threshold).sort(byLevel);
-  const long = gauged.filter((o) => o.run_m >= threshold).sort(byLevel);
+  const short = gauged.filter((o) => runAt(o, width) < threshold).sort(byLevel);
+  const long = gauged.filter((o) => runAt(o, width) >= threshold).sort(byLevel);
   const shortAt = short.at(-1);
   if (!shortAt) return { kind: 'always', lowest: long[0] as Gauged };
   const highest = [...gauged].sort(byLevel).at(-1) as Gauged;
   if (!long.length) return { kind: 'never', highest };
   return { kind: 'threshold', shortAt, longFrom: long.find((o) => o.level_m > shortAt.level_m) ?? null };
+}
+
+/**
+ * What a water level means for the run, judged against the record:
+ *  long          at this level the run has been long enough
+ *  short         at this level the run has been too short
+ *  between       between the highest "too short" and the lowest "long enough": not known
+ *  below-record  lower than any level observed: not known
+ *  unknown       no gauge record, or a level above anything observed for a run never seen long enough
+ */
+export type LevelStatus = 'long' | 'short' | 'between' | 'below-record' | 'unknown';
+
+export function levelStatus(finding: LevelFinding, level_m: number): LevelStatus {
+  switch (finding.kind) {
+    case 'ungauged':
+      return 'unknown';
+    case 'always':
+      return level_m >= finding.lowest.level_m ? 'long' : 'below-record';
+    case 'never':
+      return level_m <= finding.highest.level_m ? 'short' : 'unknown';
+    case 'threshold':
+      if (level_m <= finding.shortAt.level_m) return 'short';
+      return finding.longFrom && level_m >= finding.longFrom.level_m ? 'long' : 'between';
+  }
 }

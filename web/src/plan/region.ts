@@ -2,6 +2,7 @@
 // analysis can work on. `assembleRegion` is pure so it can be tested without a network.
 import { frameFor, toXY } from './model.ts';
 import type { Run } from './model.ts';
+import { lineAt, mappedRunAt, measuredAtAll, runAt } from './widths.ts';
 import type {
   BBox,
   FeatureCollection,
@@ -13,6 +14,7 @@ import type {
   Region,
   RegionInfo,
   ReservoirRecord,
+  RunLine,
   WaterProps,
 } from './types.ts';
 
@@ -23,6 +25,8 @@ export const CELL_KM = 1.5;
  * worse than they are. The analysis area is the box drawn in by this margin.
  */
 export const EDGE_MARGIN_KM = 20;
+/** Clear width assumed for files that predate per-width runs, metres. */
+export const DEFAULT_WIDTH_M = 100;
 /** A reservoir needs at least this many clear months before its record is shown. */
 export const MIN_CLEAR_MONTHS = 6;
 
@@ -36,40 +40,64 @@ export function assembleRegion(
 ): Region {
   const frame = frameFor(info.bbox);
 
-  const runs: Run[] = water.features.map((feature, body) => {
-    const [alon, alat, blon, blat] = feature.properties.run;
-    const [ax, ay] = toXY(frame, alon, alat);
-    const [bx, by] = toXY(frame, blon, blat);
-    return { ax, ay, bx, by, body, lengthM: feature.properties.run_m };
-  });
+  const widths = water.meta?.widths?.length ? water.meta.widths : [DEFAULT_WIDTH_M];
+  const toRun = (line: RunLine, body: number, lengthM: number): Run => {
+    const [ax, ay] = toXY(frame, line[0], line[1]);
+    const [bx, by] = toXY(frame, line[2], line[3]);
+    return { ax, ay, bx, by, body, lengthM };
+  };
 
-  // Attach satellite records to their water bodies.
+  // For each width: the run of every water body on its mapped outline.
+  const runs: Run[][] = widths.map((_, k) =>
+    water.features.map((feature, body) => {
+      const mapped = mappedRunAt(feature.properties, k);
+      return toRun(mapped.line, body, mapped.metres);
+    }),
+  );
+
+  // Attach satellite records to their water bodies. A record is used only if it has
+  // enough clear months and was measured at every width, so no width is ever compared
+  // against a missing measurement.
   const indexById = new Map(water.features.map((feature, i) => [feature.properties.id, i]));
   const observed = new Map<number, ReservoirRecord>();
   for (const reservoir of observedFile?.reservoirs ?? []) {
     const body = indexById.get(reservoir.id);
-    if (body === undefined || reservoir.series.length < MIN_CLEAR_MONTHS) continue;
+    if (body === undefined || reservoir.series.length < MIN_CLEAR_MONTHS || !measuredAtAll(reservoir.series, widths.length)) continue;
     observed.set(body, {
       series: reservoir.series,
-      driest: leastBy(reservoir.series, (o) => o.run_m),
+      driest: widths.map((_, k) => leastBy(reservoir.series, (o) => runAt(o, k))),
+      latest: leastBy(reservoir.series, (o) => -Date.parse(o.date)),
       lowestSurface: leastBy(reservoir.series, (o) => o.water_share),
       gauge: reservoir.gauge ?? null,
       fillHistory: reservoir.fill_history ?? [],
     });
   }
 
-  // The dry scenario: each observed reservoir at its driest observed month.
-  const dryRuns: Run[] = runs.map((run) => {
-    const record = observed.get(run.body);
-    if (!record) return run;
-    const { line, run_m } = record.driest;
-    if (!line) return { ...run, lengthM: 0 };
-    const [ax, ay] = toXY(frame, line[0], line[1]);
-    const [bx, by] = toXY(frame, line[2], line[3]);
-    return { ax, ay, bx, by, body: run.body, lengthM: run_m };
-  });
-  water.features.forEach((feature, i) => {
-    feature.properties.run_dry = dryRuns[i]?.lengthM ?? feature.properties.run_m;
+  // The dry scenario, for each width: every observed reservoir at its driest observed month.
+  const dryRuns: Run[][] = runs.map((atWidth, k) =>
+    atWidth.map((run) => {
+      const driest = observed.get(run.body)?.driest[k];
+      if (!driest) return run;
+      const line = lineAt(driest, k);
+      return line ? toRun(line, run.body, runAt(driest, k)) : { ...run, lengthM: 0 };
+    }),
+  );
+  // For each width: every observed reservoir as in its most recent image.
+  const latestRuns: Run[][] = runs.map((atWidth, k) =>
+    atWidth.map((run) => {
+      const latest = observed.get(run.body)?.latest;
+      if (!latest) return run;
+      const line = lineAt(latest, k);
+      return line ? toRun(line, run.body, runAt(latest, k)) : { ...run, lengthM: 0 };
+    }),
+  );
+  // Flat copies on each feature, so the map can filter by them.
+  water.features.forEach((feature, body) => {
+    widths.forEach((_, k) => {
+      feature.properties[`r${k}`] = runs[k]?.[body]?.lengthM ?? 0;
+      feature.properties[`d${k}`] = dryRuns[k]?.[body]?.lengthM ?? 0;
+      feature.properties[`l${k}`] = latestRuns[k]?.[body]?.lengthM ?? 0;
+    });
   });
 
   const area: BBox = [
@@ -98,10 +126,12 @@ export function assembleRegion(
   return {
     info,
     frame,
+    widths,
     water,
     fires,
     runs,
     dryRuns,
+    latestRuns,
     observed,
     observedMeta: observedFile?.meta ?? null,
     minDepthM: observedFile?.meta.depth?.min_depth_m ?? null,

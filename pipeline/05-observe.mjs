@@ -15,7 +15,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { fromUrl } from 'geotiff';
 import proj4 from 'proj4';
 import { REGIONS, PARAMS } from './regions.mjs';
-import { erode, fillGaps, longestChord, rasterise } from './lib/raster.mjs';
+import { atLeast, distanceToDry, fillGaps, longestChord, rasterise } from './lib/raster.mjs';
 
 const STAC = 'https://earth-search.aws.element84.com/v1/search';
 const PX = 10; // metres
@@ -124,13 +124,17 @@ async function measure(polysLonLat, item) {
     }
   }
   if (nBad / nInside > MAX_BAD) return null;
-  const halfPx = Math.round(PARAMS.corridorWidthM / 2 / PX);
-  const chord = longestChord(erode(fillGaps(mask, inside, w, h), w, h, halfPx), w, h, PARAMS.directionStepDeg);
+  // The longest straight run at each clear width. One distance map serves them all.
+  const distance = distanceToDry(fillGaps(mask, inside, w, h), w, h);
+  const chords = PARAMS.corridorWidthsM.map((width) => longestChord(atLeast(distance, Math.round(width / 2 / PX)), w, h, PARAMS.directionStepDeg));
+  const chord = chords[0];
   const inv = proj4('WGS84', utm(epsg)).inverse;
   const toLonLat = ([px, py]) => inv([ox + (px + x0 + 0.5) * PX, oy - (py + y0 + 0.5) * PX]).map((v) => Math.round(v * 1e5) / 1e5);
   return {
     run_m: chord ? Math.round(chord.lengthPx * PX) : 0,
     line: chord ? [...toLonLat(chord.a), ...toLonLat(chord.b)] : null,
+    // One entry per clear width in meta.widths: [metres, lon, lat, lon, lat]; zeros where no run fits.
+    runs_w: chords.map((c) => (c ? [Math.round(c.lengthPx * PX), ...toLonLat(c.a), ...toLonLat(c.b)] : [0, 0, 0, 0, 0])),
     water_share: Math.round((nWater / nInside) * 1000) / 1000,
     bad_share: Math.round((nBad / nInside) * 1000) / 1000,
   };
@@ -156,8 +160,9 @@ const save = (reservoirs) =>
         region: id,
         built: new Date().toISOString(),
         source: 'Copernicus Sentinel-2 L2A (ESA), via Earth Search STAC (Element 84)',
-        method: `Water = scene-classification water, or NDWI > ${NDWI_WATER}, or MNDWI > ${MNDWI_WATER}, inside the mapped outline at ${PX} m; single-pixel gaps filled; up to ${SCENES_PER_MONTH} clearest scenes per month (each with at most ${MAX_BAD * 100} % cloud, shadow or missing pixels), keeping the wettest; run = longest straight chord with a ${PARAMS.corridorWidthM} m clear corridor`,
+        method: `Water = scene-classification water, or NDWI > ${NDWI_WATER}, or MNDWI > ${MNDWI_WATER}, inside the mapped outline at ${PX} m; single-pixel gaps filled; up to ${SCENES_PER_MONTH} clearest scenes per month (each with at most ${MAX_BAD * 100} % cloud, shadow or missing pixels), keeping the wettest; run = longest straight chord, measured at each clear corridor width listed in widths`,
         years: [Y0, Y1],
+        widths: PARAMS.corridorWidthsM,
       },
       reservoirs,
     }),
@@ -178,6 +183,8 @@ for (const f of targets) {
     const mpx = ((e0 - w0) * 111320 * Math.cos((s0 * Math.PI) / 180) * (n0 - s0) * 110540) / (PX * PX) / 1e6;
     if (mpx > MAX_MEGAPIXELS) { console.log(`${p.name ?? p.id}: ${mpx.toFixed(1)} megapixels per scene, skipped as too large`); continue; }
   }
+  // A reservoir measured before runs were taken at several widths is measured again.
+  result = result.filter((r) => r.id !== p.id || r.series.every((o) => Array.isArray(o.runs_w) && o.runs_w.length === PARAMS.corridorWidthsM.length));
   if (result.some((r) => r.id === p.id)) { console.log(`${p.name ?? p.id}: already done, skipped`); continue; }
   const polys = f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates;
   let w = Infinity, s = Infinity, e = -Infinity, n = -Infinity;

@@ -7,11 +7,13 @@
 //
 // To cover a new feature, add a step to a path below, or add a new path.
 
+import type { Scenario } from './types.ts';
+
 export interface TourApi {
   setThreshold(m: number): void;
   getThreshold(): number;
-  setScenario(s: 'mapped' | 'dry'): void;
-  getScenario(): 'mapped' | 'dry';
+  setScenario(s: Scenario): void;
+  getScenario(): Scenario;
   hasObserved(): boolean;
   hasProbe(): boolean;
   probeCentre(): void;
@@ -89,7 +91,7 @@ const PATHS: Path[] = [
       {
         target: '.slider-row',
         title: 'Tell the map what the aircraft needs',
-        text: 'A scooper needs a long, straight stretch of water. One nautical mile is the usual planning figure and is already set. For high lakes or very hot days, choose "2.5 miles". Otherwise leave it and press Next.',
+        text: 'A scooper needs a long, straight stretch of water. One nautical mile is the usual planning figure and is already set; choose "2.5 miles" for high lakes or very hot days. Below it, the clear width says how wide that water must be. Leave both as they are for now and press Next.',
       },
       {
         target: '#map',
@@ -133,9 +135,9 @@ const PATHS: Path[] = [
       {
         target: '#scenario',
         title: 'Put every reservoir at its lowest',
-        text: "The map normally uses each reservoir's mapped outline, which is its full level.",
+        text: "The map normally uses each reservoir's mapped outline, which is its full level. 'Latest image' shows each as it last looked from space; 'Driest month' is the stress test.",
         task: {
-          prompt: 'Click "Driest month seen".',
+          prompt: 'Click "Driest month".',
           done: (api) => api.getScenario() === 'dry',
           demo: (api) => api.setScenario('dry'),
           after: 'The map has recalculated. In the three boxes, the struck-through figure is the full-reservoir value and the bold figure is the dry one.',
@@ -242,6 +244,9 @@ const PATHS: Path[] = [
   },
 ];
 
+/** On a phone the map stays at the top of the screen, so a target is scrolled to just below it, not to the middle. */
+const PHONE = window.matchMedia('(max-width: 820px)');
+
 export function initTour(api: TourApi) {
   const card = document.getElementById('tour') as HTMLElement;
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -257,7 +262,7 @@ export function initTour(api: TourApi) {
     const el = document.querySelector<HTMLElement>(sel);
     if (!el || el.hidden) return;
     el.classList.add('tour-focus');
-    if (el.closest('#panel')) el.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' });
+    if (el.closest('#panel')) el.scrollIntoView({ block: PHONE.matches ? 'start' : 'center', behavior: reduced ? 'auto' : 'smooth' });
   }
   function cleanup() {
     clearInterval(poll);

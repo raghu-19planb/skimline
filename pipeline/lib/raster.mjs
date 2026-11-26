@@ -31,6 +31,22 @@ export function rasterise(polys, w, h) {
  * Two-pass chamfer distance transform (3-4 weights, i.e. distances in thirds of a pixel).
  */
 export function erode(mask, w, h, r) {
+  return atLeast(distanceToDry(mask, w, h), r);
+}
+
+/** Pixels at least `r` pixels from any dry pixel, from a distance map made by distanceToDry. */
+export function atLeast(distance, r) {
+  const out = new Uint8Array(distance.length);
+  const limit = r * 3;
+  for (let i = 0; i < distance.length; i++) out[i] = distance[i] >= limit ? 1 : 0;
+  return out;
+}
+
+/**
+ * Distance from every water pixel to the nearest dry pixel (or the edge), in thirds of a
+ * pixel. Compute once, then threshold with atLeast for as many widths as needed.
+ */
+export function distanceToDry(mask, w, h) {
   const INF = 1e9;
   const d = new Int32Array(w * h);
   for (let i = 0; i < d.length; i++) d[i] = mask[i] ? INF : 0;
@@ -47,10 +63,7 @@ export function erode(mask, w, h, r) {
       if (!d[i]) continue;
       d[i] = Math.min(d[i], at(x + 1, y) + 3, at(x, y + 1) + 3, at(x + 1, y + 1) + 4, at(x - 1, y + 1) + 4);
     }
-  const out = new Uint8Array(w * h);
-  const limit = r * 3;
-  for (let i = 0; i < d.length; i++) out[i] = d[i] >= limit ? 1 : 0;
-  return out;
+  return d;
 }
 
 /** Longest straight line of set pixels, over all directions. Returns pixel endpoints and length. */

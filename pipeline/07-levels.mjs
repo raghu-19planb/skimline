@@ -59,7 +59,13 @@ for (const reservoir of observed.reservoirs) {
     o.fill_pct = reading ? reading.fill_pct : null;
   }
   knownDeepRuns(reservoir.series, MIN_DEPTH_M).forEach((d, i) => Object.assign(reservoir.series[i], d));
-  reservoir.gauge = { station: gauge.station, source: gauge.source, first: daily[0]?.date ?? null, last: daily.at(-1)?.date ?? null };
+  // The same, at each clear width the runs were measured for.
+  const widths = observed.meta.widths ?? [];
+  const perWidth = widths.map((_, k) => knownDeepRuns(reservoir.series, MIN_DEPTH_M, (o) => o.runs_w?.[k]?.[0] ?? 0));
+  reservoir.series.forEach((o, i) => {
+    if (widths.length) o.deep_runs_w = perWidth.map((result) => result[i].deep_run_m);
+  });
+  reservoir.gauge = { api: gauge.api, station: gauge.station, source: gauge.source, first: daily[0]?.date ?? null, last: daily.at(-1)?.date ?? null };
   reservoir.fill_history = monthlyFill(daily);
   joined++;
   const known = reservoir.series.filter((o) => o.deep_run_m !== null);

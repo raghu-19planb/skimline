@@ -16,7 +16,8 @@ let measured = 0;
 
 for (const f of raw.features) {
   const polys = f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates;
-  let best = null;
+  // The longest run at each clear width, best over the polygon's parts.
+  const bestAt = PARAMS.corridorWidthsM.map(() => null);
   let areaM2 = 0;
   for (const rings of polys) {
     if (!rings[0] || rings[0].length < 4) continue;
@@ -33,11 +34,16 @@ for (const f of raw.features) {
     }
     if (Math.hypot(xmax - xmin, ymax - ymin) < PARAMS.minRunKeptM) continue;
     measured++;
-    const run = longestRun(pr, PARAMS.corridorWidthM, PARAMS.directionStepDeg);
-    if (run && (!best || run.length > best.length)) {
-      best = { length: run.length, bearing: run.bearing, a: unproject(run.a, lon0, lat0), b: unproject(run.b, lon0, lat0) };
-    }
+    PARAMS.corridorWidthsM.forEach((width, k) => {
+      // A wider corridor can only shorten the run, so stop once a narrower one found nothing worth keeping.
+      if (k > 0 && !bestAt[k - 1]) return;
+      const run = longestRun(pr, width, PARAMS.directionStepDeg);
+      if (run && (!bestAt[k] || run.length > bestAt[k].length)) {
+        bestAt[k] = { length: run.length, bearing: run.bearing, a: unproject(run.a, lon0, lat0), b: unproject(run.b, lon0, lat0) };
+      }
+    });
   }
+  const best = bestAt[0];
   if (!best || best.length < PARAMS.minRunKeptM) continue;
   out.push({
     type: 'Feature',
@@ -49,6 +55,8 @@ for (const f of raw.features) {
       run_m: Math.round(best.length),
       bearing: Math.round(best.bearing),
       run: [r5(best.a[0]), r5(best.a[1]), r5(best.b[0]), r5(best.b[1])],
+      // One entry per clear width in meta.widths: [metres, bearing, lon, lat, lon, lat]; zeros where no run fits.
+      runs_w: bestAt.map((b) => (b ? [Math.round(b.length), Math.round(b.bearing), r5(b.a[0]), r5(b.a[1]), r5(b.b[0]), r5(b.b[1])] : [0, 0, 0, 0, 0, 0])),
     },
     geometry: {
       type: f.geometry.type,
@@ -87,7 +95,7 @@ writeFileSync(
       region: id,
       source: raw.source,
       fetched: raw.fetched,
-      corridorWidthM: PARAMS.corridorWidthM,
+      widths: PARAMS.corridorWidthsM,
       minRunKeptM: PARAMS.minRunKeptM,
       inputPolygons: raw.features.length,
     },
