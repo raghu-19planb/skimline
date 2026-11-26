@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Methods — Skimline</title>
+  </head>
+  <body>
+    <article class="doc">
+      <p class="wordmark"><a href="/">← Skimline map</a> · <a href="/guide.html">User guide</a></p>
+      <h1>Methods, sources and limits</h1>
+      <p class="lede">
+        Skimline is a planning aid built entirely from open data. This page states what it measures, where each number comes from, and what it cannot know. It is not for flight operations.
+      </p>
+
+      <h2>The question</h2>
+      <p>
+        Water-scooping aircraft such as the Canadair CL-415 refill by skimming a lake or reservoir. How many loads an aircraft delivers in an hour depends mostly on how far the fire is from water it can use. Two things decide whether a water body is usable: it must offer a long enough straight run, and that run must still be there when the fire comes. Reservoirs shrink in the same droughts that bring large fires.
+      </p>
+
+      <h2>What already exists</h2>
+      <p>This project builds on earlier work and should be read alongside it.</p>
+      <ul>
+        <li>RAND (Keating et al., 2012, MG-1234) estimated how many historical US fires lay near scooper-accessible water. It did not consider depth or seasonal change.</li>
+        <li>Wotton and Jurko (Natural Resources Canada, for the Swiss Federal Office for the Environment, 2025) screened Swiss lakes against CL-415 size criteria. Static, no drought dimension.</li>
+        <li>TracPlus Labs (2026) screened about 5.7 million US water bodies by geometry. It states that it does not assess depth or current water level.</li>
+        <li>Agencies hold their own knowledge. British Columbia cites more than 1,700 skimmable water bodies; Catalonia assesses reservoirs by reconnaissance flight; the Valencian region publishes an open water-point layer that flags seaplane loading.</li>
+      </ul>
+      <p>
+        We found no public, open map of scooper-suitable water for Canada or Spain as a whole, and no study that follows the loss of refill sites through a drought over time. The effect itself is documented: in April 2023 Catalan fire service amphibious aircraft could no longer use the La Baells and La Llosa del Cavall reservoirs at about 26 % of capacity (3Cat, 1 April 2023), and a US interagency safety bulletin (IA APB 21-05, 2021) warns that approved scoop sites must be reassessed in drought.
+      </p>
+
+      <h2>Step 1 — the longest straight run in each water body</h2>
+      <p>
+        For every lake and reservoir polygon, the pipeline finds the longest straight line that stays in the water with a clear corridor around it. It tries every direction in 3° steps, slices the polygon with parallel lines, and keeps the longest stretch where the full corridor width is water. Islands break the run. The method is unit-tested against shapes with known answers.
+      </p>
+      <p>Rivers are excluded in this version. Some Spanish canyon reservoirs are mapped as river sections in OpenStreetMap and are therefore missing; replacing the source with the official national reservoir inventory is on the roadmap.</p>
+
+      <h2>Step 2 — minutes per load from any point</h2>
+      <p>
+        The map is divided into 1.5 km cells. For each cell the model finds the nearest usable run and converts the straight-line distance to minutes per load with the US Forest Service rule of thumb for flat terrain. Loads per hour is 60 divided by minutes per load; litres per hour multiplies by the tank volume.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Distance, water to fire</th><th>Minutes per load</th></tr></thead>
+          <tbody>
+            <tr><td>Next to the fire</td><td>1.5</td></tr>
+            <tr><td>1 mile (1.6 km)</td><td>3</td></tr>
+            <tr><td>3 miles (4.8 km)</td><td>4</td></tr>
+            <tr><td>6 miles (9.7 km)</td><td>6</td></tr>
+            <tr><td>10 miles (16 km)</td><td>9</td></tr>
+            <tr><td>15 miles (24 km)</td><td>12</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Values between rows are interpolated in a straight line; beyond 15 miles the last slope continues. The analysis area is the downloaded box drawn in by 20 km, because water outside the box is unknown and would make the edges look worse than they are.</p>
+
+      <h2>Step 3 — what the satellite saw</h2>
+      <p>
+        A mapped reservoir outline is usually its full level. For the largest reservoirs, the pipeline reads Sentinel-2 imagery at 10 m for every month since 2021 and measures the water that was actually there. A pixel inside the mapped outline counts as water if the scene classification says water, or either of two water indices does (NDWI above 0, MNDWI above 0.1). Isolated single-pixel gaps are filled. Up to three of the clearest scenes are measured each month and the wettest is kept, because water does not come and go within a month but haze and glint do hide it. Scenes with more than 3 % cloud, shadow or missing pixels over the reservoir are skipped. The run is then re-measured inside the observed water.
+      </p>
+      <p>
+        Check: in 2024, a wet year, the observed run of the two largest reservoirs stayed within about 6 % of the run measured on their mapped outlines in the months they were full. A formal validation against gauge levels is on the roadmap.
+      </p>
+
+      <h2>Numbers and where they come from</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Value</th><th>Used</th><th>Status</th><th>Source</th></tr></thead>
+          <tbody>
+            <tr><td>Run length, default</td><td>1,852 m (1 nautical mile)</td><td><span class="flag src">sourced</span></td><td>Wotton &amp; Jurko, Natural Resources Canada, 2025</td></tr>
+            <tr><td>Run length, sea level</td><td>about 1 mile</td><td><span class="flag src">sourced</span></td><td>USFS Standards for Multi-Engine Water Scooper Operations, 2026</td></tr>
+            <tr><td>Run length, 8,000 ft</td><td>about 2.5 miles</td><td><span class="flag src">sourced</span></td><td>Same</td></tr>
+            <tr><td>Clear corridor width</td><td>100 m</td><td><span class="flag asm">assumption</span></td><td>Slightly stricter than the 300 ft (91 m) minimum width in Wotton &amp; Jurko</td></tr>
+            <tr><td>Minutes per load</td><td>Table above</td><td><span class="flag src">sourced</span></td><td>USFS 2026 standards, section 7.1 (CL-415 and CL-215T, flat terrain)</td></tr>
+            <tr><td>Tank volume</td><td>6,137 L</td><td><span class="flag src">sourced</span></td><td>De Havilland Canada DHC-515 specification sheet</td></tr>
+            <tr><td>Minimum depth</td><td>1.8 m (6 ft)</td><td><span class="flag asm">not tested</span></td><td>NWCG PMS 518 (2026). Open outlines carry no depth</td></tr>
+            <tr><td>Straight-line flight</td><td>—</td><td><span class="flag asm">assumption</span></td><td>Terrain, circuits and wind are not modelled</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The manufacturer does not currently publish a scooping distance or minimum depth, so thresholds here cite government documents.</p>
+
+      <h2>Data</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Layer</th><th>Source</th><th>Licence</th></tr></thead>
+          <tbody>
+            <tr><td>Lakes and reservoirs</td><td>OpenStreetMap contributors, via Overpass API</td><td>ODbL</td></tr>
+            <tr><td>Fire perimeters, Canada</td><td>National Burned Area Composite, Natural Resources Canada</td><td>Open Government Licence – Canada</td></tr>
+            <tr><td>Fire perimeters, Iberia</td><td>EFFIS burnt areas, European Commission / Copernicus</td><td>CC BY 4.0</td></tr>
+            <tr><td>Observed water</td><td>Copernicus Sentinel-2 L2A, via Earth Search STAC</td><td>Copernicus open data terms</td></tr>
+            <tr><td>Basemap</td><td>OpenFreeMap, OpenMapTiles, OpenStreetMap</td><td>ODbL</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Fire perimeters are fires of 100 ha or more since 2016. A fire is placed at the centre of its largest mapped part.</p>
+
+      <h2>What this cannot tell you</h2>
+      <ul>
+        <li><strong>Depth.</strong> A long run over shallow water is not usable. Drawdown exposes stumps, bars and old structures.</li>
+        <li><strong>Obstacles and approach.</strong> Power lines, bridges, boats, and terrain on the approach and climb-out are not checked.</li>
+        <li><strong>Permission.</strong> Whether an agency or dam operator has approved a site is not public.</li>
+        <li><strong>Altitude and heat.</strong> The required run grows with elevation and temperature. The slider lets you set it; the map does not yet do so per lake.</li>
+        <li><strong>Other aircraft.</strong> Helicopters and single-engine scoopers need far less water and are not modelled.</li>
+        <li><strong>Outline quality.</strong> OpenStreetMap is volunteer-mapped; outlines vary in age and accuracy.</li>
+      </ul>
+
+      <h2>Reproduce it</h2>
+      <p>The pipeline and site are in one repository. Each step is a short script: download water, measure runs, download fires, observe reservoirs, write the manifest. Adding a region is one entry in a configuration file.</p>
+    </article>
+    <script type="module">
+      import '/src/style.css';
+    </script>
+  </body>
+</html>

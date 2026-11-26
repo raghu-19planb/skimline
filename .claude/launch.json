@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "skimline-web",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["web/node_modules/vite/bin/vite.js", "web", "--port", "5183", "--strictPort", "--host", "127.0.0.1"],
+      "port": 5183,
+      "url": "http://127.0.0.1:5183"
+    }
+  ]
+}

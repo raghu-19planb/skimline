@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="An open-data map of where water-scooping firefighting aircraft can refill in Canada and Spain, and how long each load takes from any point." />
+    <title>Skimline — where firefighting aircraft can refill</title>
+  </head>
+  <body>
+    <div id="app">
+      <aside id="panel" aria-label="Controls and results">
+        <header>
+          <p class="wordmark">Skimline</p>
+          <h1>Where can a water bomber refill, and how long does each load take?</h1>
+          <p class="lede">
+            Scooper aircraft skim a lake or reservoir to refill. They need a long, straight stretch of open water. This map measures that stretch for every water body, from open data.
+          </p>
+        </header>
+
+        <nav id="regions" class="tabs" aria-label="Region"></nav>
+        <p id="region-note" class="note"></p>
+        <div id="scenario" class="seg" role="group" aria-label="Water level" hidden>
+          <button type="button" data-s="mapped" aria-pressed="true">As mapped (full)</button>
+          <button type="button" data-s="dry" aria-pressed="false">Driest month seen</button>
+        </div>
+
+        <section aria-labelledby="run-h">
+          <h2 id="run-h">Water run the aircraft needs</h2>
+          <div class="slider-row">
+            <input id="run" type="range" min="800" max="4100" step="1" value="1852" aria-describedby="run-help" />
+            <output id="run-out" for="run"></output>
+          </div>
+          <div id="presets" class="chips"></div>
+          <p id="run-help" class="help">Longer at altitude and in heat. Move it to see which water bodies drop out.</p>
+        </section>
+
+        <section aria-label="Summary" id="stats" class="stats"></section>
+
+        <section aria-labelledby="legend-h">
+          <h2 id="legend-h">Minutes per load, from any point</h2>
+          <ul id="legend" class="legend"></ul>
+          <div class="toggles">
+            <label><input type="checkbox" id="t-grid" checked /> Minutes per load</label>
+            <label><input type="checkbox" id="t-fires" checked /> Fires since 2016</label>
+            <label><input type="checkbox" id="t-off" checked /> Water too short</label>
+          </div>
+        </section>
+
+        <section aria-labelledby="obs-h" id="observed" hidden>
+          <h2 id="obs-h">Reservoirs seen from space</h2>
+          <p id="observed-sum" class="note" style="margin: 0 0 8px"></p>
+          <ol id="observed-list" class="fire-list"></ol>
+          <p class="help">Usable run each month, measured on satellite images. Red dots are months below the run required. "Driest month seen" puts each reservoir at its own lowest month; these were not all the same month.</p>
+        </section>
+
+        <section aria-labelledby="fires-h">
+          <h2 id="fires-h">Large fires furthest from usable water</h2>
+          <ol id="fire-list" class="fire-list"></ol>
+        </section>
+
+        <footer>
+          <p><strong>Planning aid, not for flight operations.</strong> Depth, obstacles and terrain on approach are not checked.</p>
+          <p><a href="/guide.html">How to use this map</a> · <a href="/methods.html">Methods, sources and limits</a></p>
+          <p id="credits" class="credits"></p>
+        </footer>
+      </aside>
+
+      <main>
+        <div id="map" role="application" aria-label="Map"></div>
+        <div id="readout" class="readout" hidden></div>
+        <p id="hint" class="hint">Click anywhere to measure that spot</p>
+      </main>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

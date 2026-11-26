@@ -1,0 +1,14 @@
+import { defineConfig } from 'vite';
+import { resolve } from 'node:path';
+
+export default defineConfig({
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(import.meta.dirname, 'index.html'),
+        methods: resolve(import.meta.dirname, 'methods.html'),
+        guide: resolve(import.meta.dirname, 'guide.html'),
+      },
+    },
+  },
+});

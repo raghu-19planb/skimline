@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="How to use Skimline, an open-data map of where water-scooping firefighting aircraft can refill." />
+    <title>User guide — Skimline</title>
+  </head>
+  <body>
+    <article class="doc">
+      <p class="wordmark"><a href="/">← Skimline map</a></p>
+      <h1>How to use this map</h1>
+      <p class="lede">
+        Skimline shows where water-scooping firefighting aircraft can refill, how long each load takes from any point, and how reservoirs lose their usable water in dry months. It is a planning aid built from open data. It is not for flight operations.
+      </p>
+
+      <h2>In one minute</h2>
+      <ol>
+        <li><strong>Pick a region</strong>: Spain or Canada.</li>
+        <li><strong>Read the colours.</strong> Blue ground is close to usable water, so an aircraft can deliver many loads an hour. Orange and red ground is far from it.</li>
+        <li><strong>Click any spot</strong> to get its numbers: the nearest usable water, minutes per load, loads an hour and litres an hour.</li>
+        <li><strong>Switch to "Driest month seen"</strong> (Spain) to see what is lost when reservoirs are drawn down.</li>
+      </ol>
+
+      <h2>The controls</h2>
+
+      <h3>Region</h3>
+      <p>Two pilot regions are loaded: Ourense–Zamora in north-west Spain (including the Portuguese border), and Okanagan–Shuswap in British Columbia. The dashed box is the area analysed. Results outside it are not shown, because water beyond the downloaded area is unknown.</p>
+
+      <h3>Water run the aircraft needs</h3>
+      <p>A scooper needs a long, straight stretch of open water. The slider sets how long. Three presets match published figures:</p>
+      <ul>
+        <li><strong>1 mile</strong>: US Forest Service figure at sea level.</li>
+        <li><strong>1 nautical mile</strong> (default): the screening minimum used by Natural Resources Canada authors.</li>
+        <li><strong>2.5 miles</strong>: US Forest Service figure at 8,000 ft. Use a longer run for high lakes and hot days.</li>
+      </ul>
+      <p>As you move the slider, water bodies that are too short turn grey and the whole map recalculates.</p>
+
+      <h3>Water level: "As mapped" or "Driest month seen"</h3>
+      <p>This appears where reservoirs have been measured from satellite images. "As mapped" uses each reservoir's mapped outline, which is usually its full level. "Driest month seen" puts each observed reservoir at its lowest measured month since 2021. The summary boxes then show the old value struck through beside the new one. The reservoirs did not all reach their lowest in the same month, so read this as a stress test, not as a picture of one date.</p>
+
+      <h3>The three summary boxes</h3>
+      <ul>
+        <li><strong>Usable refill sites</strong>: water bodies with a run at least as long as the slider.</li>
+        <li><strong>Area within 6 min per load</strong>: the share of the analysed area where an aircraft can deliver ten or more loads an hour.</li>
+        <li><strong>Burned area over 9 min per load</strong>: of everything that burned in fires of 100 ha or more since 2016, the share that was far from usable water.</li>
+      </ul>
+
+      <h3>Layers</h3>
+      <p>Three tick boxes switch the coloured surface, the fire perimeters and the too-short water bodies on and off. Zoom in to see a yellow dashed line on each usable water body: that is its longest straight run.</p>
+
+      <h2>Reading a spot</h2>
+      <p>Click anywhere inside the dashed box. A line is drawn to the nearest usable run and a card shows:</p>
+      <ul>
+        <li><strong>Minutes per load</strong>: the round trip to the water and back, from a US Forest Service rule of thumb for flat terrain.</li>
+        <li><strong>Loads an hour</strong> and <strong>litres an hour</strong> for one aircraft with a 6,137-litre tank.</li>
+      </ul>
+
+      <h2>Reading a water body</h2>
+      <p>Click a lake or reservoir. The card shows its longest straight run, the compass direction of that run, and its mapped area. Where the reservoir has been observed from space, a small chart shows its usable run month by month. The dashed line on the chart is the run required; red dots are months that fell below it.</p>
+
+      <h2>The two lists</h2>
+      <ul>
+        <li><strong>Reservoirs seen from space</strong> ranks observed reservoirs by how often they dropped below the required run. Click one to go to it.</li>
+        <li><strong>Large fires furthest from usable water</strong> lists fires of 500 ha or more with the slowest loads. Click one to see it on the map.</li>
+      </ul>
+
+      <h2>Questions it can help answer</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>If you are</th><th>Try this</th></tr></thead>
+          <tbody>
+            <tr><td>A fire agency planner</td><td>Find the red areas that have also burned. These are places where scoopers work slowly and other aircraft or a designated water point may be needed.</td></tr>
+            <tr><td>A reservoir or basin manager</td><td>Open "Reservoirs seen from space" and find the ones that lose their run in dry months. Switch to "Driest month seen" to see how much ground depends on them.</td></tr>
+            <tr><td>A municipality</td><td>Click your town or the forest beside it. Compare "As mapped" with "Driest month seen".</td></tr>
+            <tr><td>A crew working outside its home region</td><td>Use the map for a first briefing on where long water is, then confirm with the local agency.</td></tr>
+            <tr><td>A researcher or student</td><td>Read the Methods page. Every number carries its source, and the code is open.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>What it does not tell you</h2>
+      <ul>
+        <li>Whether the water is deep enough, or free of power lines, boats and submerged hazards.</li>
+        <li>Whether terrain allows the approach and climb-out.</li>
+        <li>Whether a site is approved for use.</li>
+        <li>Anything about helicopters or smaller aircraft, which need far less water.</li>
+      </ul>
+      <p>Full detail is on the <a href="/methods.html">Methods, sources and limits</a> page.</p>
+
+      <h2>Words used</h2>
+      <ul>
+        <li><strong>Scooper</strong>: an aircraft that refills by skimming the water surface, such as the Canadair CL-415.</li>
+        <li><strong>Run</strong>: the longest straight stretch of open water in a lake or reservoir, with clear water on both sides.</li>
+        <li><strong>Load</strong>: one tank of water dropped on the fire.</li>
+        <li><strong>Drawn down</strong>: a reservoir whose level has been lowered by use or drought.</li>
+      </ul>
+
+      <h2>What's new</h2>
+      <ul id="changelog">
+        <li><strong>November 2026, first pilot.</strong> Two regions; scooping runs for every mapped lake and reservoir; minutes per load from any point; fire perimeters since 2016; monthly satellite measurements of the largest reservoirs in the Spanish region, 2021–2025.</li>
+      </ul>
+    </article>
+    <script type="module">
+      import '/src/style.css';
+    </script>
+  </body>
+</html>

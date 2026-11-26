@@ -1,0 +1,66 @@
+{
+  "built": "2026-11-26T16:46:17.919Z",
+  "params": {
+    "corridorWidthM": 100,
+    "minRunKeptM": 400,
+    "directionStepDeg": 3
+  },
+  "regions": [
+    {
+      "id": "es-northwest",
+      "name": "Ourense – Zamora, Spain",
+      "country": "ES",
+      "bbox": [
+        -8.4,
+        41.6,
+        -5.6,
+        42.7
+      ],
+      "note": "Reservoir country: most open water here is dammed and drawn down in summer.",
+      "water": {
+        "file": "es-northwest-water.geojson",
+        "count": 69,
+        "inputPolygons": 3059,
+        "source": "OpenStreetMap contributors (ODbL), via Overpass API",
+        "fetched": "2026-11-26T16:36:07.796Z"
+      },
+      "fires": {
+        "file": "es-northwest-fires.geojson",
+        "count": 412,
+        "source": "EFFIS burnt areas, European Commission / Copernicus EMS — CC BY 4.0",
+        "fetched": "2026-11-26T16:33:22.571Z",
+        "minHa": 100,
+        "firstYear": 2016
+      },
+      "observed": "es-northwest-observed.json"
+    },
+    {
+      "id": "ca-okanagan",
+      "name": "Okanagan – Shuswap, British Columbia, Canada",
+      "country": "CA",
+      "bbox": [
+        -120.2,
+        49.5,
+        -118.4,
+        51.2
+      ],
+      "note": "Lake country: long natural lakes in valleys, small lakes on the plateaus.",
+      "water": {
+        "file": "ca-okanagan-water.geojson",
+        "count": 276,
+        "inputPolygons": 4611,
+        "source": "OpenStreetMap contributors (ODbL), via Overpass API",
+        "fetched": "2026-11-26T16:44:49.509Z"
+      },
+      "fires": {
+        "file": "ca-okanagan-fires.geojson",
+        "count": 93,
+        "source": "National Burned Area Composite (NBAC), Natural Resources Canada — Open Government Licence – Canada",
+        "fetched": "2026-11-26T16:31:33.158Z",
+        "minHa": 100,
+        "firstYear": 2016
+      },
+      "observed": null
+    }
+  ]
+}
