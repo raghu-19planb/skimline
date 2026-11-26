@@ -4,89 +4,95 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="An open-data map of where water-scooping firefighting aircraft can refill in Canada and Spain, and how long each load takes from any point." />
+    <meta
+      name="description"
+      content="Plan in five steps: pick a region, set what the aircraft needs, see where loads are slow, test a dry year, and decide. An open-data map of scooper refill water in Canada and Spain."
+    />
     <title>Start planning — Skimline</title>
   </head>
   <body>
     <div id="app">
-      <aside id="panel" aria-label="Controls and results">
+      <aside id="panel" aria-label="The five planning steps">
         <header>
-          <p class="wordmark"><a href="/">← Skimline</a></p>
+          <p class="wordmark"><a class="brand" href="/">← Skimline</a></p>
           <h1>Start planning</h1>
           <p class="lede">Five steps, top to bottom. The map updates as you go.</p>
           <button id="tour-start" type="button" class="tour-start"><span aria-hidden="true">▶</span> Guide me, step by step</button>
         </header>
 
-        <section id="region-row" class="region-row" aria-labelledby="s1">
+        <section class="step" id="region-row" aria-labelledby="s1">
           <h2 id="s1"><span class="num">1</span> Pick your region</h2>
           <select id="region-select" aria-labelledby="s1"></select>
           <p id="coverage" class="help"></p>
           <p id="region-note" class="note"></p>
         </section>
 
-        <section aria-labelledby="run-h">
-          <h2 id="run-h"><span class="num">2</span> Set what the aircraft needs</h2>
+        <section class="step" aria-labelledby="s2">
+          <h2 id="s2"><span class="num">2</span> Set what the aircraft needs</h2>
           <div class="slider-row">
-            <input id="run" type="range" min="800" max="4100" step="1" value="1852" aria-describedby="run-help" />
+            <input id="run" type="range" min="800" max="4100" step="1" value="1852" aria-labelledby="s2" aria-describedby="run-help" />
             <output id="run-out" for="run"></output>
           </div>
           <div id="presets" class="chips"></div>
           <p id="run-help" class="help">The straight run of water a scooper needs. Longer at altitude and in heat. Water bodies that are too short drop out.</p>
         </section>
 
-        <section aria-labelledby="legend-h">
-          <h2 id="legend-h"><span class="num">3</span> See where loads are slow</h2>
-          <p class="note" style="margin: 0 0 10px">The colours are minutes per load. <strong>Click anywhere on the map</strong> to measure that spot.</p>
+        <section class="step" aria-labelledby="s3">
+          <h2 id="s3"><span class="num">3</span> See where loads are slow</h2>
+          <p class="note lead">The colours are minutes per load. <strong>Click anywhere on the map</strong> to measure that spot.</p>
           <ul id="legend" class="legend"></ul>
           <div class="toggles">
             <label><input type="checkbox" id="t-grid" checked /> Minutes per load</label>
             <label><input type="checkbox" id="t-fires" checked /> Fires since 2016</label>
             <label><input type="checkbox" id="t-off" checked /> Water too short</label>
           </div>
-          <div aria-label="Summary" id="stats" class="stats" style="margin-top: 14px"></div>
+          <div id="stats" class="stats" aria-label="Summary" aria-live="polite"></div>
         </section>
 
-        <section aria-labelledby="dry-h">
-          <h2 id="dry-h"><span class="num">4</span> Test a dry year</h2>
+        <section class="step" aria-labelledby="s4">
+          <h2 id="s4"><span class="num">4</span> Test a dry year</h2>
           <div id="scenario" class="seg" role="group" aria-label="Water level" hidden>
-            <button type="button" data-s="mapped" aria-pressed="true">As mapped (full)</button>
-            <button type="button" data-s="dry" aria-pressed="false">Driest month seen</button>
+            <button type="button" data-scenario="mapped" aria-pressed="true">As mapped (full)</button>
+            <button type="button" data-scenario="dry" aria-pressed="false">Driest month seen</button>
           </div>
           <p id="dry-none" class="note" hidden>No reservoirs have been measured from space in this region yet, so there is no dry-year view here.</p>
           <div id="observed" hidden>
-            <h3 id="obs-h">Reservoirs seen from space</h3>
-            <p id="observed-sum" class="note" style="margin: 0 0 8px"></p>
-            <ol id="observed-list" class="fire-list"></ol>
-            <p class="help">Usable run each month, measured on satellite images. Red dots are months below the run required. "Driest month seen" puts each reservoir at its own lowest month; these were not all the same month.</p>
+            <h3>Reservoirs seen from space</h3>
+            <p id="observed-sum" class="note lead"></p>
+            <ol id="observed-list" class="pick-list"></ol>
+            <p class="help">
+              Usable run each month, measured on satellite images. Red dots are months below the run required. "Driest month seen" puts each reservoir at its
+              own lowest month; these were not all the same month.
+            </p>
           </div>
         </section>
 
-        <section aria-labelledby="fires-h" id="fires-section">
-          <h2 id="fires-h"><span class="num">5</span> Decide</h2>
+        <section class="step" id="fires-section" aria-labelledby="s5">
+          <h2 id="s5"><span class="num">5</span> Decide</h2>
           <ul class="decide">
             <li><strong>Red ground that has burned</strong> needs other aircraft or a water point.</li>
             <li><strong>Reservoirs that fall short</strong> in step 4 are the ones to protect.</li>
           </ul>
           <h3>Large fires furthest from usable water</h3>
-          <ol id="fire-list" class="fire-list"></ol>
+          <ol id="fire-list" class="pick-list"></ol>
           <p class="note"><a href="/planners.html">Every decision this supports →</a></p>
         </section>
 
-        <footer>
+        <footer class="panel-foot">
           <p><strong>Planning aid, not for flight operations.</strong> Depth, obstacles and terrain on approach are not checked.</p>
-          <p><a href="/planners.html">For planners</a> · <a href="/guide.html">How to use this map</a> · <a href="/methods.html">Methods, sources and limits</a></p>
-          <p class="disclaimer">Skimline is an independent project built from open data. It cannot promise or guarantee that the data is always the latest or accurate.</p>
+          <p><a href="/planners.html">For planners</a> · <a href="/guide.html">User guide</a> · <a href="/methods.html">Methods, sources and limits</a></p>
+          <p>Skimline is an independent project built from open data. It cannot promise or guarantee that the data is always the latest or accurate.</p>
           <p id="credits" class="credits"></p>
         </footer>
       </aside>
 
       <main>
-        <div id="map" role="application" aria-label="Map"></div>
-        <div id="readout" class="readout" hidden></div>
+        <div id="map" role="application" aria-label="Map of minutes per load"></div>
+        <div id="readout" class="readout" aria-live="polite" hidden></div>
         <p id="hint" class="hint">Click anywhere to measure that spot</p>
-        <div id="tour" class="tour" role="dialog" aria-label="Quick tour" aria-live="polite" hidden></div>
+        <div id="tour" class="tour" role="dialog" aria-label="Step-by-step guide" aria-live="polite" hidden></div>
       </main>
     </div>
-    <script type="module" src="/src/main.ts"></script>
+    <script type="module" src="/src/plan/main.ts"></script>
   </body>
 </html>

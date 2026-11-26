@@ -1,0 +1,794 @@
+/* The planning page: a panel of five steps beside a full-height map. */
+@import './site.css';
+
+:root {
+  font-size: 15px;
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  font-size: 1rem;
+  line-height: 1.45;
+  background: var(--mist);
+}
+#app {
+  display: grid;
+  grid-template-columns: 384px 1fr;
+  height: 100%;
+}
+main {
+  position: relative;
+  min-width: 0;
+}
+#map {
+  position: absolute;
+  inset: 0;
+  animation: rise var(--slow) var(--ease) both;
+}
+
+/* ---------- panel ---------- */
+#panel {
+  overflow-y: auto;
+  padding: 20px 20px 28px;
+  border-right: 1px solid var(--line);
+  background: var(--mist);
+  scroll-behavior: smooth;
+}
+/* the header and each step arrive one after another when the page opens */
+#panel > * {
+  animation: rise 0.7s var(--ease) both;
+}
+#panel > :nth-child(2) {
+  animation-delay: 0.06s;
+}
+#panel > :nth-child(3) {
+  animation-delay: 0.12s;
+}
+#panel > :nth-child(4) {
+  animation-delay: 0.18s;
+}
+#panel > :nth-child(5) {
+  animation-delay: 0.24s;
+}
+#panel > :nth-child(n + 6) {
+  animation-delay: 0.3s;
+}
+
+.wordmark {
+  margin: 0 0 10px;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.wordmark a {
+  color: var(--water);
+  text-decoration: none;
+}
+.wordmark a:hover {
+  text-decoration: underline;
+}
+#panel h1 {
+  margin: 0 0 6px;
+  font-size: 26px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
+}
+.lede {
+  margin: 0;
+  color: var(--ink-2);
+}
+
+/* each numbered step is a card */
+.step {
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: var(--r-m);
+  background: var(--paper);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+}
+.step h2 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: -0.005em;
+}
+.num {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--water);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+.step h3 {
+  margin: 18px 0 8px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.note,
+.help {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+.note.lead {
+  margin: 0 0 10px;
+}
+.note strong {
+  color: var(--ink);
+}
+
+/* step 1: region */
+#region-select {
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-s);
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  transition: border-color var(--fast);
+}
+#region-select:hover {
+  border-color: var(--water);
+}
+
+/* step 2: run length */
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.slider-row input {
+  flex: 1;
+  accent-color: var(--water);
+}
+.slider-row output {
+  min-width: 78px;
+  text-align: right;
+  font-size: 17px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.chips button {
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition:
+    border-color var(--fast),
+    background var(--fast),
+    color var(--fast);
+}
+.chips button:hover {
+  border-color: var(--water);
+}
+.chips button[aria-pressed='true'] {
+  border-color: var(--water);
+  background: var(--water-soft);
+  color: var(--water);
+  font-weight: 600;
+}
+
+/* step 3: legend, layers, headline numbers */
+.legend {
+  list-style: none;
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+}
+.legend li {
+  display: grid;
+  grid-template-columns: 18px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+}
+.legend i {
+  width: 18px;
+  height: 14px;
+  border-radius: 3px;
+}
+.legend small {
+  color: var(--ink-2);
+}
+.toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-top: 10px;
+  font-size: 13.5px;
+}
+.toggles input {
+  accent-color: var(--water);
+}
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 14px;
+}
+.stat {
+  padding: 10px;
+  border-radius: var(--r-s);
+  background: var(--mist);
+}
+.stat b {
+  display: block;
+  font-size: 22px;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.stat s {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-2);
+}
+.stat span {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+/* step 4: full or driest */
+.seg {
+  display: flex;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--r-s);
+  background: var(--paper);
+}
+.seg button {
+  flex: 1;
+  padding: 8px 6px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition:
+    background var(--fast),
+    color var(--fast);
+}
+.seg button[aria-pressed='true'] {
+  background: var(--water);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* lists of reservoirs and fires */
+.pick-list {
+  list-style: none;
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+}
+.pick-list button {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-s);
+  background: var(--paper);
+  color: var(--ink);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition:
+    border-color var(--fast),
+    transform var(--fast) var(--ease),
+    box-shadow var(--fast);
+}
+.pick-list button:hover {
+  border-color: var(--water);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.07);
+}
+.pick-list .t {
+  font-weight: 600;
+}
+.pick-list .m {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--fire);
+}
+.pick-list .m.ok {
+  color: var(--water);
+}
+.pick-list .s {
+  grid-column: 1 / -1;
+  font-size: 12.5px;
+  color: var(--ink-2);
+}
+.pick-list .spark {
+  grid-column: 1 / -1;
+}
+.pick-list .empty {
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+
+/* the small history chart */
+.spark {
+  display: block;
+}
+.spark .need {
+  stroke: var(--night-2);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+}
+.spark .run {
+  fill: none;
+  stroke: var(--water);
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+.spark .below {
+  fill: var(--fire);
+}
+
+/* step 5 */
+.decide {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13.5px;
+}
+
+.panel-foot {
+  margin-top: 22px;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+.panel-foot p {
+  margin: 0 0 8px;
+}
+.credits {
+  font-size: 12px;
+}
+
+/* ---------- card over the map ---------- */
+.readout {
+  position: absolute;
+  right: 14px;
+  bottom: 34px;
+  width: min(350px, calc(100% - 28px));
+  padding: 14px 16px;
+  border-radius: var(--r-m);
+  background: rgb(255 255 255 / 0.96);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-card);
+}
+.readout.enter {
+  animation: card-in var(--medium) var(--ease) both;
+}
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}
+.readout h3 {
+  margin: 0 26px 6px 0;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+}
+.readout p {
+  margin: 0 0 6px;
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+.readout .big {
+  display: flex;
+  gap: 14px;
+  margin: 10px 0 8px;
+}
+.readout .big div {
+  flex: 1;
+}
+.readout .big b {
+  display: block;
+  font-size: 20px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.readout .big span {
+  font-size: 12px;
+  color: var(--ink-2);
+}
+.readout .spark {
+  margin: 4px 0 8px;
+}
+.close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink-2);
+  font-size: 18px;
+  cursor: pointer;
+}
+.close:hover {
+  background: rgb(0 0 0 / 0.06);
+}
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.tag.ok {
+  background: var(--water-soft);
+  color: var(--water);
+}
+.tag.no {
+  background: var(--fire-soft);
+  color: var(--fire);
+}
+.coords {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3px 10px;
+  margin: 8px 0;
+  font-size: 13px;
+}
+.coords dt {
+  color: var(--ink-2);
+}
+.coords dd {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink);
+  user-select: all;
+}
+.hint {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  margin: 0;
+  padding: 6px 12px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: rgb(21 35 43 / 0.82);
+  color: #fff;
+  font-size: 13px;
+  pointer-events: none;
+}
+
+/* ---------- step-by-step guide ---------- */
+.tour-start {
+  width: 100%;
+  margin-top: 14px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: var(--r-s);
+  background: var(--water);
+  color: #fff;
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+  transition:
+    background var(--fast),
+    transform var(--fast) var(--ease);
+}
+.tour-start:hover {
+  background: #124f75;
+  transform: translateY(-1px);
+}
+.tour-start.pulse {
+  animation: pulse 1.8s ease-out 3;
+}
+@keyframes pulse {
+  from {
+    box-shadow: 0 0 0 0 rgb(23 97 143 / 0.55);
+  }
+  to {
+    box-shadow: 0 0 0 14px rgb(23 97 143 / 0);
+  }
+}
+.tour {
+  position: absolute;
+  left: 50%;
+  bottom: 34px;
+  z-index: 5;
+  width: min(460px, calc(100% - 28px));
+  max-height: calc(100% - 60px);
+  overflow-y: auto;
+  padding: 16px 18px 14px;
+  transform: translateX(-50%);
+  border-radius: var(--r-m);
+  background: var(--night-2);
+  color: #fff;
+  box-shadow: 0 10px 34px rgb(21 35 43 / 0.35);
+  animation: tour-in var(--medium) var(--ease) both;
+}
+@keyframes tour-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(14px);
+  }
+}
+.tour h3 {
+  margin: 0 28px 6px 0;
+  font-size: 17px;
+}
+.tour p {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: #dfe7ea;
+}
+.tour .tour-count {
+  margin-bottom: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9fb7c2;
+}
+.tour .close {
+  color: #cfdbe0;
+}
+.tour .close:hover {
+  background: rgb(255 255 255 / 0.12);
+}
+.tour-paths {
+  display: grid;
+  gap: 8px;
+}
+.tour-paths button {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #4c5b63;
+  border-radius: 9px;
+  background: #1e2f38;
+  color: #fff;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color var(--fast);
+}
+.tour-paths button:hover:not(:disabled) {
+  border-color: var(--gold);
+}
+.tour-paths button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.tour-paths strong {
+  display: block;
+  font-size: 14.5px;
+}
+.tour-paths span {
+  display: block;
+  margin-top: 3px;
+  font-size: 12.5px;
+  color: #c4d2d8;
+}
+.tour-dots {
+  display: flex;
+  gap: 5px;
+  margin: 0 0 10px;
+}
+.tour-dots i {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: #33454e;
+}
+.tour-dots i.past {
+  background: #8fa6b0;
+}
+.tour-dots i.now {
+  background: var(--gold);
+}
+.tour-task {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-left: 4px solid var(--gold);
+  border-radius: var(--r-s);
+  background: #2b3f49;
+  font-size: 14px;
+}
+.tour-task.done {
+  border-left-color: #6fd09a;
+}
+.tour-task b {
+  display: block;
+  margin-bottom: 2px;
+}
+.tour-task button {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 5px 10px;
+  border: 1px solid #8fa6b0;
+  border-radius: 6px;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+.tour-nav {
+  display: flex;
+  gap: 8px;
+}
+.tour-nav button {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #4c5b63;
+  border-radius: 7px;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: 13.5px;
+  cursor: pointer;
+}
+.tour-nav button.primary {
+  border-color: #fff;
+  background: #fff;
+  color: var(--ink);
+  font-weight: 650;
+}
+/* the control the guide or the recorded tour is pointing at */
+.tour-focus {
+  outline: 3px solid var(--gold);
+  outline-offset: 4px;
+  border-radius: var(--r-s);
+  transition: outline-color var(--fast);
+}
+body.touring .readout,
+body.demo .readout {
+  top: 12px;
+  right: 56px;
+  bottom: auto;
+}
+body.touring .hint,
+body.demo .hint,
+body.demo .tour-start {
+  display: none;
+}
+
+/* ---------- recorded tour (plan.html?demo=1): the page plays itself ---------- */
+body.demo #app {
+  pointer-events: none;
+}
+.demo-cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 50;
+  margin: -3px 0 0 -5px;
+  pointer-events: none;
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.45, 0.05, 0.2, 1);
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.35));
+}
+.demo-ring {
+  position: absolute;
+  left: -12px;
+  top: -12px;
+  width: 34px;
+  height: 34px;
+  border: 3px solid var(--gold);
+  border-radius: 50%;
+  animation: demo-ring 0.45s ease-out forwards;
+}
+@keyframes demo-ring {
+  from {
+    transform: scale(0.3);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+.demo-caption {
+  position: fixed;
+  left: 50%;
+  bottom: 22px;
+  z-index: 40;
+  width: min(720px, calc(100% - 32px));
+  padding: 14px 20px;
+  transform: translateX(-50%);
+  border-radius: var(--r-m);
+  background: rgb(21 35 43 / 0.94);
+  color: #fff;
+  box-shadow: 0 10px 34px rgb(0 0 0 / 0.3);
+}
+.demo-caption small {
+  display: block;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9fb7c2;
+}
+.demo-caption b {
+  display: block;
+  margin: 2px 0;
+  font-size: 19px;
+}
+.demo-caption span {
+  font-size: 15px;
+  color: #dfe7ea;
+}
+
+/* ---------- phone: map on top, steps below ---------- */
+@media (max-width: 820px) {
+  #app {
+    grid-template-columns: 1fr;
+    grid-template-rows: 52svh 1fr;
+  }
+  main {
+    grid-row: 1;
+  }
+  #panel {
+    grid-row: 2;
+    padding: 16px;
+    border-right: 0;
+    border-top: 1px solid var(--line);
+  }
+  .readout {
+    right: 10px;
+    left: 10px;
+    bottom: 10px;
+    width: auto;
+  }
+  body.touring .readout {
+    top: 8px;
+    right: 8px;
+    left: 8px;
+    padding: 10px 12px;
+  }
+  .tour {
+    bottom: 8px;
+    padding: 12px 14px 10px;
+  }
+  .tour p {
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+}

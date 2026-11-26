@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Skimline maps where water-scooping firefighting aircraft can refill, how fast they can work from there, and what a dry year takes away. Open data, for wildfire planners in Spain and Canada." />
+    <meta
+      name="description"
+      content="Skimline maps where water-scooping firefighting aircraft can refill, how fast they can work from there, and what a dry year takes away. Open data, for wildfire planners in Spain and Canada."
+    />
     <title>Skimline — water for the fire</title>
     <link rel="preload" as="image" href="/hero/okanagan-clear.jpg" />
   </head>
@@ -14,8 +17,9 @@
       <div class="nav-links">
         <a href="#how">How it helps</a>
         <a href="#tour">Tour</a>
-        <a href="#regions">Regions</a>
+        <a href="#coverage">Coverage</a>
         <a href="/planners.html">For planners</a>
+        <a href="/methods.html">Methods</a>
       </div>
       <a class="pill" href="/plan.html">Start planning</a>
     </nav>
@@ -26,7 +30,7 @@
       <div class="hero-text">
         <p class="eyebrow">Open-data wildfire planning · Spain and Canada</p>
         <h1>Water bombers<br />need water.</h1>
-        <p class="line" id="hero-line" aria-live="polite"></p>
+        <p class="line" aria-live="polite"><span id="hero-line"></span></p>
         <div class="cta">
           <a class="pill big" href="/plan.html">Start planning</a>
           <a class="pill big ghost" href="#tour">Watch the tour</a>
@@ -39,73 +43,104 @@
     </header>
 
     <main>
-      <section class="statement reveal">
-        <p>
-          A scooper refills by skimming a lake. It needs about <strong>a nautical mile</strong> of straight, open water. In a drought that water shrinks, <strong>in the same weeks the fires come.</strong>
+      <section class="problem" id="problem">
+        <p class="kicker reveal">01 · The problem</p>
+        <p class="statement reveal">
+          A scooper refills by skimming a lake. It needs about <strong>a nautical mile</strong> of straight, open water. In a drought that water shrinks,
+          <strong>in the same weeks the fires come.</strong>
         </p>
-      </section>
-
-      <section class="pair reveal" aria-label="The same reservoir, two years apart">
-        <figure>
-          <img src="/hero/baells-full.jpg" alt="Satellite image of La Baells reservoir almost full" loading="lazy" />
-          <figcaption id="cap-full"></figcaption>
-        </figure>
-        <figure>
-          <img src="/hero/baells-low.jpg" alt="Satellite image of La Baells reservoir drawn down, with pale exposed banks" loading="lazy" />
-          <figcaption id="cap-low"></figcaption>
-        </figure>
-        <p class="pair-note">The same reservoir, seen by satellite. Skimline measures this for every month since 2021.</p>
+        <div class="compare reveal" id="compare">
+          <img class="under" src="/hero/baells-low.jpg" alt="Satellite image of La Baells reservoir drawn down, with pale exposed banks" loading="lazy" />
+          <img class="over" src="/hero/baells-full.jpg" alt="Satellite image of La Baells reservoir almost full" loading="lazy" />
+          <span class="label left" id="cap-full"></span>
+          <span class="label right" id="cap-low"></span>
+          <span class="handle" aria-hidden="true"></span>
+          <input type="range" min="0" max="100" value="50" aria-label="Slide to compare the reservoir full and drawn down" />
+        </div>
+        <p class="compare-note reveal">One reservoir, two satellite passes. Drag to compare. Skimline measures this for every month since 2021.</p>
       </section>
 
       <section class="how" id="how">
-        <h2 class="reveal">How it helps planners</h2>
-        <p class="sub reveal">Five steps, from a blank map to a decision.</p>
+        <div class="head">
+          <p class="kicker reveal">02 · How it helps planners</p>
+          <h2 class="reveal">Five steps, from a blank map to a decision.</h2>
+        </div>
         <ol class="steps">
           <li class="reveal">
-            <div class="circle"><svg viewBox="0 0 48 48"><path d="M24 43s13-11.5 13-22a13 13 0 1 0-26 0c0 10.5 13 22 13 22z" /><circle cx="24" cy="21" r="4.5" /></svg></div>
+            <div class="circle">
+              <svg viewBox="0 0 48 48" aria-hidden="true">
+                <path d="M24 43s13-11.5 13-22a13 13 0 1 0-26 0c0 10.5 13 22 13 22z" />
+                <circle cx="24" cy="21" r="4.5" />
+              </svg>
+            </div>
             <h3>Pick your region</h3>
             <p>Each one is built the same way, from open data.</p>
           </li>
           <li class="reveal">
-            <div class="circle"><svg viewBox="0 0 48 48"><path d="M6 24h36" /><circle cx="18" cy="24" r="5" /><path d="M10 12h28M10 36h28" opacity="0.4" /></svg></div>
+            <div class="circle">
+              <svg viewBox="0 0 48 48" aria-hidden="true">
+                <path d="M6 24h36" />
+                <circle cx="18" cy="24" r="5" />
+                <path d="M10 12h28M10 36h28" opacity="0.4" />
+              </svg>
+            </div>
             <h3>Set what the aircraft needs</h3>
             <p>A longer run at altitude or in heat.</p>
           </li>
           <li class="reveal">
-            <div class="circle"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="16" /><path d="M24 14v10l7 5" /></svg></div>
+            <div class="circle">
+              <svg viewBox="0 0 48 48" aria-hidden="true">
+                <circle cx="24" cy="24" r="16" />
+                <path d="M24 14v10l7 5" />
+              </svg>
+            </div>
             <h3>See where loads are slow</h3>
             <p>Minutes per load for every point on the map.</p>
           </li>
           <li class="reveal">
-            <div class="circle"><svg viewBox="0 0 48 48"><path d="M24 6s11 13 11 21a11 11 0 0 1-22 0c0-8 11-21 11-21z" /><path d="M14 30h20" opacity="0.5" /></svg></div>
+            <div class="circle">
+              <svg viewBox="0 0 48 48" aria-hidden="true">
+                <path d="M24 6s11 13 11 21a11 11 0 0 1-22 0c0-8 11-21 11-21z" />
+                <path d="M14 30h20" opacity="0.5" />
+              </svg>
+            </div>
             <h3>Test a dry year</h3>
             <p>Put each reservoir at its lowest measured month.</p>
           </li>
           <li class="reveal">
-            <div class="circle solid"><svg viewBox="0 0 48 48"><path d="M13 25l8 8 15-17" /></svg></div>
+            <div class="circle solid">
+              <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M13 25l8 8 15-17" /></svg>
+            </div>
             <h3>Decide</h3>
             <p>Where to send other aircraft. Which reservoirs to protect. Where a water point is needed.</p>
           </li>
         </ol>
-        <p class="more reveal"><a class="pill big" href="/plan.html">Start planning</a></p>
-        <p class="more reveal" style="margin-top: 18px; font-size: 17px"><a href="/planners.html">Every decision it supports →</a></p>
+        <div class="after-steps reveal">
+          <a class="pill big" href="/plan.html">Start planning</a>
+          <a href="/planners.html">Every decision it supports →</a>
+        </div>
       </section>
 
       <section class="tour" id="tour">
-        <h2 class="reveal">Watch it work</h2>
-        <p class="sub reveal">A recorded tour of the real map. About a minute. Nothing to click.</p>
+        <div class="head">
+          <p class="kicker reveal">03 · Watch it work</p>
+          <h2 class="reveal">A recorded tour of the real map.</h2>
+          <p class="sub reveal">About a minute. Nothing to click.</p>
+        </div>
         <div class="player reveal" id="player">
           <!-- Captions sit above the screen so they are always in view while it plays. -->
-          <div class="caption" aria-live="polite">
+          <div class="caption" id="caption" aria-live="polite">
             <p class="step" id="cap-step">Recorded tour</p>
             <h3 id="cap-title">Seven moments, one minute</h3>
-            <p id="cap-text">It plays by itself. Pause whenever you like.</p>
+            <p class="text" id="cap-text">It plays by itself. Pause whenever you like.</p>
           </div>
           <div class="progress" id="progress"></div>
           <div class="chrome"><i></i><i></i><i></i><span>skimline · start planning</span></div>
           <div class="screen" id="screen">
             <button class="poster" id="poster" type="button" aria-label="Play the recorded tour">
-              <span class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg></span>
+              <span class="play"
+                ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg
+              ></span>
               <span>Play the tour</span>
             </button>
           </div>
@@ -117,33 +152,41 @@
         </div>
       </section>
 
-      <section class="numbers reveal" aria-label="What is built">
-        <div><b id="n-regions">–</b><span>regions built</span></div>
-        <div><b id="n-water">–</b><span>water bodies measured</span></div>
-        <div><b id="n-fires">–</b><span>fire perimeters since 2016</span></div>
-        <div><b>2021–25</b><span>monthly satellite record</span></div>
-      </section>
-
-      <section class="regions" id="regions">
-        <h2 class="reveal">Regions</h2>
-        <p class="sub reveal">Every region runs through the same pipeline. More are on the way.</p>
+      <section class="coverage" id="coverage">
+        <div class="head">
+          <p class="kicker reveal">04 · Coverage</p>
+          <h2 class="reveal">Built region by region, by one method.</h2>
+          <p class="sub reveal">Every region runs through the same pipeline. More are on the way.</p>
+        </div>
+        <div class="numbers reveal" aria-label="What is built">
+          <div><b id="n-regions">–</b><span>regions built</span></div>
+          <div><b id="n-water">–</b><span>water bodies measured</span></div>
+          <div><b id="n-fires">–</b><span>fire perimeters since 2016</span></div>
+          <div><b>2021–25</b><span>monthly satellite record</span></div>
+        </div>
         <div class="region-cards" id="region-cards"></div>
         <p class="planned reveal" id="planned"></p>
       </section>
 
-      <section class="closing reveal">
-        <h2>The whole process is on one page.</h2>
-        <p class="sub">Five steps, top to bottom, on a live map.</p>
-        <a class="pill big" href="/plan.html">Start planning</a>
+      <section class="closing">
+        <h2 class="reveal">The whole process is on one page.</h2>
+        <p class="sub reveal">Five steps, top to bottom, on a live map.</p>
+        <a class="pill big reveal" href="/plan.html">Start planning</a>
       </section>
     </main>
 
     <footer class="foot">
-      <p class="links"><a href="/plan.html">Start planning</a><a href="/planners.html">For planners</a><a href="/guide.html">User guide</a><a href="/methods.html">Methods, sources and limits</a><a href="https://github.com/raghu-19planb/skimline">Code</a></p>
+      <p class="links">
+        <a href="/plan.html">Start planning</a><a href="/planners.html">For planners</a><a href="/guide.html">User guide</a
+        ><a href="/methods.html">Methods, sources and limits</a><a href="https://github.com/raghu-19planb/skimline">Code</a>
+      </p>
       <p><strong>Planning aid, not for flight operations.</strong> Depth, obstacles and terrain on approach are not checked.</p>
-      <p class="disclaimer">Skimline is an independent project built from open data. It cannot promise or guarantee that the data is always the latest or accurate.</p>
-      <p class="small">Satellite images: Copernicus Sentinel-2 (ESA). The aircraft on this page is drawn for illustration; every image behind it is a real satellite photograph.</p>
+      <p>Skimline is an independent project built from open data. It cannot promise or guarantee that the data is always the latest or accurate.</p>
+      <p class="small">
+        Satellite images: Copernicus Sentinel-2 (ESA). The aircraft on this page is drawn for illustration; every image behind it is a real satellite
+        photograph.
+      </p>
     </footer>
-    <script type="module" src="/src/home.ts"></script>
+    <script type="module" src="/src/home/main.ts"></script>
   </body>
 </html>

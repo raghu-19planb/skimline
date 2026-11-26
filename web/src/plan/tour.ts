@@ -111,7 +111,7 @@ const PATHS: Path[] = [
       {
         target: '#readout .coords',
         title: 'The position to pass on',
-        text: 'These are the latitude and longitude of the nearest point on that water\'s usable run, and of your place. Click a coordinate to select it for copying.',
+        text: "These are the latitude and longitude of the nearest point on that water's usable run, and of your place. Click a coordinate to select it for copying.",
       },
     ],
     outcome: {
@@ -133,7 +133,7 @@ const PATHS: Path[] = [
       {
         target: '#scenario',
         title: 'Put every reservoir at its lowest',
-        text: 'The map normally uses each reservoir\'s mapped outline, which is its full level.',
+        text: "The map normally uses each reservoir's mapped outline, which is its full level.",
         task: {
           prompt: 'Click "Driest month seen".',
           done: (api) => api.getScenario() === 'dry',
@@ -168,7 +168,7 @@ const PATHS: Path[] = [
       {
         target: '#stats',
         title: 'Start with the headline',
-        text: 'The third box is the share of everything burned since 2016 that lay more than nine minutes per load from usable water. The higher it is, the more this region\'s fires were out of easy reach of scoopers.',
+        text: "The third box is the share of everything burned since 2016 that lay more than nine minutes per load from usable water. The higher it is, the more this region's fires were out of easy reach of scoopers.",
       },
       {
         target: '#fires-section',
@@ -205,13 +205,38 @@ const PATHS: Path[] = [
     question: 'Just show me around',
     blurb: 'A walk through every part of the page, at your pace.',
     steps: [
-      { target: '#panel header', title: 'What this map answers', text: 'Water bombers refill by skimming a lake or reservoir. This map shows where they can, how long each load takes from any point, and what a dry year takes away.' },
-      { target: '#region-row', title: 'The region list', text: 'Each region is built by the same method from open data. Regions marked "planned" are next in line.' },
-      { target: '#legend', title: 'The colours', text: 'Blue ground is within four minutes of usable water: fifteen or more loads an hour. Red ground is over twelve minutes away: fewer than five.' },
-      { target: '.slider-row', title: 'The run the aircraft needs', text: 'Watch the slider move. As the required run grows, water bodies turn grey and drop out, and the colours change. It will return to where it started.', enter: sweepThreshold },
-      { target: '#stats', title: 'Three numbers to take away', text: 'How many water bodies are usable, how much of the area is within six minutes of one, and how much of what burned since 2016 was far from any.' },
+      {
+        target: '#panel > header',
+        title: 'What this map answers',
+        text: 'Water bombers refill by skimming a lake or reservoir. This map shows where they can, how long each load takes from any point, and what a dry year takes away.',
+      },
+      {
+        target: '#region-row',
+        title: 'The region list',
+        text: 'Each region is built by the same method from open data. Regions marked "planned" are next in line.',
+      },
+      {
+        target: '#legend',
+        title: 'The colours',
+        text: 'Blue ground is within four minutes of usable water: fifteen or more loads an hour. Red ground is over twelve minutes away: fewer than five.',
+      },
+      {
+        target: '.slider-row',
+        title: 'The run the aircraft needs',
+        text: 'Watch the slider move. As the required run grows, water bodies turn grey and drop out, and the colours change. It will return to where it started.',
+        enter: sweepThreshold,
+      },
+      {
+        target: '#stats',
+        title: 'Three numbers to take away',
+        text: 'How many water bodies are usable, how much of the area is within six minutes of one, and how much of what burned since 2016 was far from any.',
+      },
       { target: '#fires-section', title: 'Fires furthest from water', text: 'Large past fires where loads were slowest. Click one to go to it.' },
-      { target: '#panel footer', title: 'Where to read more', text: 'The planners page lists the decisions this supports. The guide explains every control. The methods page gives every source and limit.' },
+      {
+        target: '.panel-foot',
+        title: 'Where to read more',
+        text: 'The planners page lists the decisions this supports. The guide explains every control. The methods page gives every source and limit.',
+      },
     ],
     outcome: { title: 'That is the whole page', text: 'Now try a real question. Choosing one will walk you to its answer.' },
   },

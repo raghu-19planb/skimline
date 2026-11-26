@@ -36,7 +36,8 @@ class Cursor {
   el = document.createElement('div');
   constructor() {
     this.el.className = 'demo-cursor';
-    this.el.innerHTML = '<svg viewBox="0 0 24 24" width="30" height="30"><path d="M4 2l15 9-7 1.6L8.6 20z" fill="#fff" stroke="#15232b" stroke-width="1.6" stroke-linejoin="round"/></svg>';
+    this.el.innerHTML =
+      '<svg viewBox="0 0 24 24" width="30" height="30"><path d="M4 2l15 9-7 1.6L8.6 20z" fill="#fff" stroke="#15232b" stroke-width="1.6" stroke-linejoin="round"/></svg>';
     document.body.append(this.el);
     this.jump(window.innerWidth * 0.55, window.innerHeight * 0.5);
   }
@@ -86,7 +87,7 @@ const ACTS: Act[] = [
     },
   },
   {
-    title: 'First, the aircraft\'s needs',
+    title: "First, the aircraft's needs",
     text: 'A scooper needs a long, straight stretch of water. Ask for a longer run and fewer lakes qualify, so the map turns redder.',
     hold: 3500,
     play: async (api, c) => {
@@ -138,7 +139,7 @@ const ACTS: Act[] = [
     play: async (api, c) => {
       focus(null);
       api.clearProbe();
-      await c.toEl('#scenario button[data-s="dry"]', 1400);
+      await c.toEl('#scenario button[data-scenario="dry"]', 1400);
       await c.click();
       api.setScenario('dry');
       await wait(900);
