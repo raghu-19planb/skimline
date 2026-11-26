@@ -505,6 +505,7 @@ async function boot() {
     setScenario,
     getScenario: () => scenario,
     hasObserved: () => current.observed.size > 0,
+    hasProbe: () => probe !== null,
     // A point a third of the way across the analysis area: usually land with a clear answer.
     probeCentre: () => setProbe(current.area[0] + (current.area[2] - current.area[0]) * 0.36, current.area[1] + (current.area[3] - current.area[1]) * 0.5),
     clearProbe,

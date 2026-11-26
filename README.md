@@ -13,7 +13,7 @@
 
 Pilot regions: Ourense–Zamora (Spain, with the Portuguese border) and Okanagan–Shuswap (British Columbia).
 
-The full method, every source and every limitation are on the site's Methods page (`web/methods.html`). `web/planners.html` sets out the decisions it supports, and `web/src/tour.ts` is the animated tour: add a step there when a feature is added.
+The full method, every source and every limitation are on the site's Methods page (`web/methods.html`). `web/planners.html` sets out the decisions it supports, and `web/src/tour.ts` is the guided tour, organised as questions a visitor might ask: add a step or a question there when a feature is added.
 
 ## Layout
 

@@ -7,7 +7,7 @@ Ordered by how much each step would matter to the people we want to show this to
 - Longest straight run per water body, two pilot regions.
 - Minutes per load from any point; ranked past fires.
 - Monthly Sentinel-2 run history for the largest Spanish-region reservoirs, 2021–2025.
-- Animated quick tour, a page for planners, and a region list showing built and planned regions.
+- Guided tour (choose a question, be walked to its answer), a page for planners, and a region list showing built and planned regions.
 
 ## Next: make the drought finding defensible
 
