@@ -1,6 +1,6 @@
 // The recorded tour.
 //
-// Opened as map.html?demo=1, the real map plays itself like a screen recording: a cursor
+// Opened as plan.html?demo=1, the real map plays itself like a screen recording: a cursor
 // moves, clicks, and the map responds, while captions explain each moment. It is the live
 // app, not a video file, so it never shows an out-of-date screen.
 //
@@ -178,7 +178,7 @@ const ACTS: Act[] = [
   },
   {
     title: 'That is the whole idea',
-    text: 'Where scoopers are slow, which reservoirs fail in a dry year, and which fires were out of reach. Open the map and try your own place.',
+    text: 'Where scoopers are slow, which reservoirs fail in a dry year, and which fires were out of reach. Press Start planning and try your own place.',
     hold: 6000,
     play: async (_api, c) => {
       focus(null);

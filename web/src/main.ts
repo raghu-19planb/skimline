@@ -322,6 +322,7 @@ function renderObserved() {
   const sec = $('observed');
   sec.hidden = L.observed.size === 0;
   $('scenario').hidden = L.observed.size === 0;
+  $('dry-none').hidden = L.observed.size > 0;
   if (!L.observed.size) return;
   const rows = [...L.observed.entries()]
     .map(([body, o]) => ({ body, o, below: o.series.filter((s) => s.run_m < threshold).length, mapped: L.runs[body].lengthM }))
@@ -512,7 +513,7 @@ async function boot() {
     probeCentre: () => setProbe(current.area[0] + (current.area[2] - current.area[0]) * 0.36, current.area[1] + (current.area[3] - current.area[1]) * 0.5),
     clearProbe,
   });
-  // map.html?demo=1 plays the recorded tour (see demo.ts). Loaded only when asked for.
+  // plan.html?demo=1 plays the recorded tour (see demo.ts). Loaded only when asked for.
   if (new URLSearchParams(location.search).get('demo') === '1') {
     const { runDemo } = await import('./demo');
     const mapBox = () => map.getContainer().getBoundingClientRect();

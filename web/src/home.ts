@@ -4,7 +4,7 @@ import './home.css';
 // Keep those working now that the map has its own page.
 {
   const q = new URLSearchParams(location.search);
-  if (q.has('region') || q.has('tour')) location.replace(`/map.html?${q}`);
+  if (q.has('region') || q.has('tour')) location.replace(`/plan.html?${q}`);
 }
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -106,8 +106,8 @@ async function coverage() {
   for (const r of m.regions) {
     const a = document.createElement('a');
     a.className = 'region-card reveal';
-    a.href = `/map.html?region=${r.id}`;
-    a.innerHTML = `<span class="where">${r.country === 'ES' ? 'Spain' : r.country === 'CA' ? 'Canada' : r.country}</span><h3>${r.name.replace(/, (Spain|Canada)$/, '')}</h3><p>${r.note}</p><span class="go">Open →</span>`;
+    a.href = `/plan.html?region=${r.id}`;
+    a.innerHTML = `<span class="where">${r.country === 'ES' ? 'Spain' : r.country === 'CA' ? 'Canada' : r.country}</span><h3>${r.name.replace(/, (Spain|Canada)$/, '')}</h3><p>${r.note}</p><span class="go">Start planning here →</span>`;
     cards.append(a);
     watch(a);
   }
@@ -139,7 +139,7 @@ function player() {
   function start() {
     if (frame) return;
     frame = document.createElement('iframe');
-    frame.src = '/map.html?demo=1&region=es-northwest';
+    frame.src = '/plan.html?demo=1&region=es-northwest';
     frame.title = 'Recorded tour of the Skimline map';
     frame.width = String(W);
     frame.height = String(H);

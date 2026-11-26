@@ -1,5 +1,18 @@
 {
   "buildCommand": "cd web && npm ci && npm run build",
   "outputDirectory": "web/dist",
-  "installCommand": "echo skip"
+  "installCommand": "echo skip",
+  "rewrites": [
+    {
+      "source": "/plan",
+      "destination": "/plan.html"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/map.html",
+      "destination": "/plan.html",
+      "permanent": false
+    }
+  ]
 }
