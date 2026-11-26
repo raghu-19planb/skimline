@@ -82,6 +82,8 @@ const PRESETS = [
 ];
 const fmt = (n: number, d = 0) => n.toLocaleString('en-CA', { maximumFractionDigits: d, minimumFractionDigits: d });
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+/** Latitude then longitude in decimal degrees, five places (about one metre), with hemisphere letters. */
+const coord = (lat: number, lon: number) => `${Math.abs(lat).toFixed(5)}° ${lat >= 0 ? 'N' : 'S'}, ${Math.abs(lon).toFixed(5)}° ${lon >= 0 ? 'E' : 'W'}`;
 
 // ---------- state ----------
 let manifest: Manifest;
@@ -285,7 +287,11 @@ function setProbe(lon: number, lat: number) {
         <div><b>${fmt(dropsPerHour(hit.minutes), 0)}</b><span>loads an hour</span></div>
         <div><b>${fmt(litresPerHour(hit.minutes) / 1000, 0)} k L</b><span>an hour, per aircraft</span></div>
       </div>
-      <p>Flat-terrain rule of thumb. Assumes the water is deep enough and clear of obstacles.</p>`;
+      <dl class="coords">
+        <dt>Nearest point on that water's run</dt><dd>${coord(to[1], to[0])}</dd>
+        <dt>This spot</dt><dd>${coord(lat, lon)}</dd>
+      </dl>
+      <p>Latitude, longitude (WGS 84). Flat-terrain rule of thumb. Assumes the water is deep enough and clear of obstacles.</p>`;
   }
   box.querySelector('.close')!.addEventListener('click', clearProbe);
 }
@@ -360,6 +366,11 @@ function showWater(p: WaterProps) {
       <div><b>${String(p.bearing).padStart(3, '0')}°</b><span>run axis</span></div>
       <div><b>${fmt(p.area_km2, p.area_km2 < 10 ? 2 : 0)} km²</b><span>mapped area</span></div>
     </div>
+    <dl class="coords">
+      <dt>Run starts</dt><dd>${coord(p.run[1], p.run[0])}</dd>
+      <dt>Run ends</dt><dd>${coord(p.run[3], p.run[2])}</dd>
+    </dl>
+    <p>Latitude, longitude (WGS 84), on the mapped outline.</p>
     ${o ? `<p><strong>Seen from space, ${o.series.length} clear months:</strong> run between ${fmt(o.driest.run_m)} m (${monthYear(o.driest.date)}) and ${fmt(Math.max(...o.series.map((s) => s.run_m)))} m. Dashed line is the run required.</p>${sparkline(o.series, p.run_m)}` : `<p>${p.kind === 'reservoir' ? 'Reservoir: measured on its mapped outline, which is usually the full level. A drawn-down reservoir has a shorter run. Not yet observed by satellite here.' : 'Measured on its mapped outline.'}</p>`}
     <p>Depth is not known from open data.</p>`;
   box.querySelector('.close')!.addEventListener('click', clearProbe);
