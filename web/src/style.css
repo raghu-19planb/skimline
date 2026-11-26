@@ -8,7 +8,7 @@
   --water-soft: #e3eef4;
   --fire: #bf4326;
   --radius: 8px;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   font-size: 15px;
   line-height: 1.45;
   color: var(--ink);
@@ -21,7 +21,7 @@ main { position: relative; min-width: 0; }
 
 #panel { overflow-y: auto; padding: 20px 20px 28px; border-right: 1px solid var(--line); background: var(--paper); }
 .wordmark { margin: 0 0 10px; font: 600 13px/1 ui-monospace, 'Cascadia Mono', Consolas, monospace; letter-spacing: 0.14em; text-transform: uppercase; color: var(--water); }
-h1 { margin: 0 0 8px; font: 600 21px/1.22 Georgia, 'Iowan Old Style', serif; text-wrap: balance; }
+h1 { margin: 0 0 8px; font-size: 22px; font-weight: 650; line-height: 1.18; letter-spacing: -0.015em; text-wrap: balance; }
 h2 { margin: 0 0 8px; font-size: 12px; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); }
 .lede { margin: 0; color: var(--ink-2); }
 section { margin-top: 22px; }
@@ -168,3 +168,18 @@ body.touring .hint { display: none; }
 .tour-task.done { border-left-color: #6fd09a; }
 .tour-task b { display: block; margin-bottom: 2px; }
 .tour-task button { display: inline-block; margin: 8px 0 0; padding: 5px 10px; border: 1px solid #8fa6b0; border-radius: 6px; background: transparent; color: #fff; font: inherit; font-size: 12.5px; cursor: pointer; }
+
+.wordmark a { color: inherit; text-decoration: none; }
+.wordmark a:hover { text-decoration: underline; }
+
+/* Recorded tour (map.html?demo=1): the page plays itself, so nothing is clickable */
+body.demo #app { pointer-events: none; }
+body.demo .tour-start, body.demo .hint { display: none; }
+body.demo .readout { bottom: auto; top: 12px; right: 56px; }
+.demo-cursor { position: fixed; left: 0; top: 0; z-index: 50; margin: -3px 0 0 -5px; pointer-events: none; transition-property: transform; transition-timing-function: cubic-bezier(0.45, 0.05, 0.2, 1); filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.35)); }
+.demo-ring { position: absolute; left: -12px; top: -12px; width: 34px; height: 34px; border-radius: 50%; border: 3px solid #ffd24a; animation: demoring 0.45s ease-out forwards; }
+@keyframes demoring { from { transform: scale(0.3); opacity: 1; } to { transform: scale(1.5); opacity: 0; } }
+.demo-caption { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 40; width: min(720px, calc(100% - 32px)); padding: 14px 20px; border-radius: 14px; background: rgb(21 35 43 / 0.94); color: #fff; box-shadow: 0 10px 34px rgb(0 0 0 / 0.3); }
+.demo-caption small { display: block; font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: #9fb7c2; }
+.demo-caption b { display: block; margin: 2px 0; font-size: 19px; }
+.demo-caption span { font-size: 15px; color: #dfe7ea; }

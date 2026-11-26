@@ -512,6 +512,35 @@ async function boot() {
     probeCentre: () => setProbe(current.area[0] + (current.area[2] - current.area[0]) * 0.36, current.area[1] + (current.area[3] - current.area[1]) * 0.5),
     clearProbe,
   });
+  // map.html?demo=1 plays the recorded tour (see demo.ts). Loaded only when asked for.
+  if (new URLSearchParams(location.search).get('demo') === '1') {
+    const { runDemo } = await import('./demo');
+    const mapBox = () => map.getContainer().getBoundingClientRect();
+    runDemo(
+      {
+        setThreshold,
+        setScenario,
+        hasObserved: () => current.observed.size > 0,
+        demoPlace: () => [current.area[0] + (current.area[2] - current.area[0]) * 0.36, current.area[1] + (current.area[3] - current.area[1]) * 0.5],
+        screenOf: (lon, lat) => {
+          const p = map.project([lon, lat]);
+          return { x: mapBox().left + p.x, y: mapBox().top + p.y };
+        },
+        probeAt: setProbe,
+        clearProbe,
+      },
+      // Back to the opening state before each loop.
+      async () => {
+        setScenario('mapped');
+        setThreshold(REF.defaultRunM);
+        clearProbe();
+        $('panel').scrollTo({ top: 0 });
+        const [w, s, e, n] = current.area;
+        map.fitBounds([[w, s], [e, n]], { padding: 30, duration: 0 });
+        await new Promise((r) => setTimeout(r, 900));
+      },
+    );
+  }
 }
 boot().catch((err) => {
   console.error(err);

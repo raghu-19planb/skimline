@@ -1,0 +1,37 @@
+{
+  "source": "Copernicus Sentinel-2 L2A (ESA), true colour, via Earth Search STAC",
+  "shots": [
+    {
+      "name": "baells-full",
+      "file": "baells-full.jpg",
+      "place": "La Baells reservoir, Catalonia",
+      "note": "water over 92 % of its mapped outline",
+      "date": "2025-04-01",
+      "scene": "S2C_31TDG_20250401_0_L2A"
+    },
+    {
+      "name": "baells-low",
+      "file": "baells-low.jpg",
+      "place": "La Baells reservoir, Catalonia",
+      "note": "water over 42 % of its mapped outline; closed to scooper aircraft that week",
+      "date": "2023-04-02",
+      "scene": "S2A_31TDG_20230402_0_L2A"
+    },
+    {
+      "name": "culebra-fire",
+      "file": "culebra-fire.jpg",
+      "place": "Sierra de la Culebra, Zamora",
+      "note": "wildfire, June 2022",
+      "date": "2022-06-18",
+      "scene": "S2A_30TTM_20220618_0_L2A"
+    },
+    {
+      "name": "okanagan-clear",
+      "file": "okanagan-clear.jpg",
+      "place": "Okanagan Lake, British Columbia",
+      "note": "two days before the McDougall Creek wildfire spread",
+      "date": "2023-08-15",
+      "scene": "S2B_11ULR_20230815_0_L2A"
+    }
+  ]
+}
