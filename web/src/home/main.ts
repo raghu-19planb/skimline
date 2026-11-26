@@ -4,6 +4,7 @@ import { el, prefersReducedMotion, setHtml } from '../plan/dom.ts';
 import { fmt, html } from '../plan/format.ts';
 import type { Manifest } from '../plan/types.ts';
 import { initCompare } from './compare.ts';
+import type { RecordMeta } from './compare.ts';
 import { initHero } from './hero.ts';
 import type { ShotMeta } from './hero.ts';
 import { initPlayer } from './player.ts';
@@ -79,12 +80,13 @@ tintNav();
 
 initPlayer();
 
-getJson<{ shots: ShotMeta[] }>('/hero/shots.json')
-  .then(({ shots }) => {
+getJson<{ shots: ShotMeta[]; record?: RecordMeta }>('/hero/shots.json')
+  .then(({ shots, record }) => {
     initHero(shots);
     initCompare(
       shots.find((s) => s.name === 'baells-full'),
       shots.find((s) => s.name === 'baells-low'),
+      record,
     );
   })
   .catch(console.error);

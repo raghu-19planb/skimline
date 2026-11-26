@@ -167,6 +167,18 @@ async function boot(): Promise<void> {
   await view.ready;
   await showRegion(first.id, false);
 
+  // A link can name a water body (?water=<id>) to open its card on arrival, for example
+  // from the home page to a reservoir's month-by-month record.
+  const wanted = query.get('water');
+  if (wanted) {
+    const body = region.water.features.findIndex((f) => f.properties.id === wanted);
+    if (body >= 0) openWaterBody(body);
+    // Drop it from the address so it does not linger once the visitor moves on.
+    const address = new URLSearchParams(location.search);
+    address.delete('water');
+    history.replaceState(null, '', `?${address}`);
+  }
+
   const guide = {
     setThreshold,
     getThreshold: () => settings.threshold,

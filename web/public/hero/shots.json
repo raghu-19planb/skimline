@@ -1,11 +1,17 @@
 {
+  "record": {
+    "reservoir": "Pantà de la Baells",
+    "months": 45,
+    "first": "2022-01-17",
+    "last": "2025-11-09"
+  },
   "source": "Copernicus Sentinel-2 L2A (ESA), true colour, via Earth Search STAC",
   "shots": [
     {
       "name": "baells-full",
       "file": "baells-full.jpg",
       "place": "La Baells reservoir, Catalonia",
-      "note": "water over 92 % of its mapped outline",
+      "note": "Nearly full. Water covers 92% of the area it covers when full.",
       "date": "2025-04-01",
       "scene": "S2C_31TDG_20250401_0_L2A"
     },
@@ -13,7 +19,7 @@
       "name": "baells-low",
       "file": "baells-low.jpg",
       "place": "La Baells reservoir, Catalonia",
-      "note": "water over 42 % of its mapped outline; closed to scooper aircraft that week",
+      "note": "Less than half. Water covers 42% of the area it covers when full. Closed to scooper aircraft that week.",
       "date": "2023-04-02",
       "scene": "S2A_31TDG_20230402_0_L2A"
     },

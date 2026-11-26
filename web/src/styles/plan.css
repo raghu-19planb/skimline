@@ -792,3 +792,39 @@ body.demo #app {
     font-size: 13px;
   }
 }
+
+/* labels under the history chart in the reservoir card */
+.readout .axis {
+  display: flex;
+  justify-content: space-between;
+  margin: -4px 0 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+}
+.readout .key {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  font-size: 12px;
+}
+.key i {
+  display: inline-block;
+  width: 16px;
+  margin-left: 8px;
+}
+.key i:first-child {
+  margin-left: 0;
+}
+.key .k-run {
+  border-top: 2px solid var(--water);
+}
+.key .k-need {
+  border-top: 1px dashed var(--night-2);
+}
+.key .k-below {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--fire);
+}

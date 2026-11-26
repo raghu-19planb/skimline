@@ -22,8 +22,8 @@ const wettest = baells.series.reduce((a, b) => (b.water_share > a.water_share ? 
 const april2023 = baells.series.find((s) => s.date === '2023-04-02');
 
 const SHOTS = [
-  { name: 'baells-full', scene: wettest.scene, centre: [1.878, 42.135], widthKm: 9, place: 'La Baells reservoir, Catalonia', note: `water over ${Math.round(wettest.water_share * 100)} % of its mapped outline` },
-  { name: 'baells-low', scene: april2023.scene, centre: [1.878, 42.135], widthKm: 9, place: 'La Baells reservoir, Catalonia', note: `water over ${Math.round(april2023.water_share * 100)} % of its mapped outline; closed to scooper aircraft that week` },
+  { name: 'baells-full', scene: wettest.scene, centre: [1.878, 42.135], widthKm: 9, place: 'La Baells reservoir, Catalonia', note: `Nearly full. Water covers ${Math.round(wettest.water_share * 100)}% of the area it covers when full.` },
+  { name: 'baells-low', scene: april2023.scene, centre: [1.878, 42.135], widthKm: 9, place: 'La Baells reservoir, Catalonia', note: `Less than half. Water covers ${Math.round(april2023.water_share * 100)}% of the area it covers when full. Closed to scooper aircraft that week.` },
   { name: 'culebra-fire', scene: 'S2A_30TTM_20220618_0_L2A', centre: [-6.235, 41.955], widthKm: 22, place: 'Sierra de la Culebra, Zamora', note: 'wildfire, June 2022' },
   { name: 'okanagan-clear', scene: 'S2B_11ULR_20230815_0_L2A', centre: [-119.55, 49.9], widthKm: 30, place: 'Okanagan Lake, British Columbia', note: 'two days before the McDougall Creek wildfire spread' },
 ];
@@ -55,4 +55,5 @@ for (const shot of SHOTS) {
   meta.push({ name: shot.name, file: `${shot.name}.jpg`, place: shot.place, note: shot.note, date: it.properties.datetime.slice(0, 10), scene: shot.scene });
   console.log(`${shot.name}: ${it.properties.datetime.slice(0, 10)} ${shot.scene}`);
 }
-writeFileSync('../web/public/hero/shots.json', JSON.stringify({ source: 'Copernicus Sentinel-2 L2A (ESA), true colour, via Earth Search STAC', shots: meta }, null, 2));
+const record = { reservoir: baells.name, months: baells.series.length, first: baells.series[0].date, last: baells.series.at(-1).date };
+writeFileSync('../web/public/hero/shots.json', JSON.stringify({ record, source: 'Copernicus Sentinel-2 L2A (ESA), true colour, via Earth Search STAC', shots: meta }, null, 2));

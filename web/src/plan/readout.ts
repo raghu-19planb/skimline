@@ -83,11 +83,13 @@ export function showWater(props: WaterProps, record: ReservoirRecord | undefined
   const longEnough = shownRun >= threshold;
   const history = record
     ? html`<p>
-          <strong>Seen from space, ${record.series.length} clear months:</strong> run between ${fmt(record.driest.run_m)} m (${monthYear(record.driest.date)})
-          and ${fmt(Math.max(...record.series.map((o) => o.run_m)))} m. Its water surface fell to ${pct(record.lowestSurface.water_share)} of the mapped outline
-          (${monthYear(record.lowestSurface.date)}). The dashed line is the run required.
+          <strong>Month by month, from satellite images.</strong> Its usable run ranged from ${fmt(record.driest.run_m)} m
+          (${monthYear(record.driest.date)}) to ${fmt(Math.max(...record.series.map((o) => o.run_m)))} m. At its lowest, in
+          ${monthYear(record.lowestSurface.date)}, water covered ${pct(record.lowestSurface.water_share)} of the area it covers when full.
         </p>
-        ${sparkline(record.series, props.run_m, threshold)}`
+        ${sparkline(record.series, props.run_m, threshold)}
+        <p class="axis"><span>${monthYear(record.series[0]?.date ?? record.driest.date)}</span><span>${record.series.length} clear months</span><span>${monthYear(record.series.at(-1)?.date ?? record.driest.date)}</span></p>
+        <p class="key"><i class="k-run"></i>usable run <i class="k-need"></i>run required <i class="k-below"></i>month below it</p>`
     : html`<p>
         ${
           props.kind === 'reservoir'

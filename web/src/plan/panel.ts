@@ -138,8 +138,8 @@ export function renderReservoirs(region: Region, rows: ReservoirRow[], threshold
           <span class="m ${row.monthsBelow ? '' : 'ok'}">${row.monthsBelow ? `${row.monthsBelow} of ${record.series.length} months` : 'never'}</span>
           ${sparkline(record.series, row.mappedRunM, threshold, 300, 44)}
           <span class="s"
-            >Shortest run: ${fmt(record.driest.run_m)} m in ${monthYear(record.driest.date)} · mapped ${fmt(row.mappedRunM)} m · water surface down to
-            ${pct(record.lowestSurface.water_share)}</span
+            >Shortest run: ${fmt(record.driest.run_m)} m in ${monthYear(record.driest.date)} · mapped ${fmt(row.mappedRunM)} m · water down to
+            ${pct(record.lowestSurface.water_share)} of its full area</span
           >`,
         () => onPick(row.body),
       ),
