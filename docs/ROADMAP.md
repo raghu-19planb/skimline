@@ -7,11 +7,13 @@ Ordered by how much each step would matter to the people we want to show this to
 - Longest straight run per water body, two pilot regions.
 - Minutes per load from any point; ranked past fires.
 - Monthly Sentinel-2 run history for the largest Spanish-region reservoirs, 2021–2025.
+- A third region, Berguedà–Solsonès in Catalonia, built from one config entry.
 - Guided tour (choose a question, be walked to its answer), a page for planners, and a region list showing built and planned regions.
 
 ## Next: make the drought finding defensible
 
-1. **Validate against a documented case.** Catalonia, April 2023: amphibious aircraft could not use La Baells and La Llosa del Cavall at about 26 % of capacity. Run the satellite step there and see whether the measured run drops below the threshold in the same weeks. *Who: researchers, any reviewer.*
+1. **Validated against a documented case: done, with a clear lesson.** Catalonia, April 2023: amphibious aircraft could not use La Baells at about 26 % of capacity. The satellite step saw the water surface at 42 % of the mapped outline, but the straight run was still about 2,120 m, above the default. Run length alone did not predict the closure; depth and exposed hazards did. So the next step is the one below.
+1b. **From surface to depth.** Combine observed water surface with reservoir level records and, where published, bathymetry, to estimate when a run becomes too shallow. This is what would make the drought layer operationally meaningful. *Who: basin authorities, fire agencies, researchers.*
 2. **Validate against gauges.** Compare observed water share with official weekly reservoir storage (Spanish ministry hydrological bulletin). *Who: basin authorities.*
 3. **The level that matters.** For each reservoir, the storage level below which the run is lost. This is the number a dam operator can act on in fire season. *Who: basin authorities, dam operators.*
 4. **Month slider.** Show the whole region as it was in a chosen month, instead of each reservoir at its own driest.

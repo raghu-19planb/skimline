@@ -11,7 +11,7 @@
 3. **Watches reservoirs from space.** For the largest reservoirs it reads Sentinel-2 imagery month by month and re-measures the run on the water actually present.
 4. **Ranks past fires** (2016 onward, 100 ha or more) by how far they were from usable water.
 
-Pilot regions: Ourense–Zamora (Spain, with the Portuguese border) and Okanagan–Shuswap (British Columbia).
+Regions built: Ourense–Zamora (Spain, with the Portuguese border), Berguedà–Solsonès (Catalonia) and Okanagan–Shuswap (British Columbia).
 
 The full method, every source and every limitation are on the site's Methods page (`web/methods.html`). `web/planners.html` sets out the decisions it supports, and `web/src/tour.ts` is the guided tour, organised as questions a visitor might ask: add a step or a question there when a feature is added.
 

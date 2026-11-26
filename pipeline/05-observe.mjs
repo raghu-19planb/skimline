@@ -4,7 +4,8 @@
 // was actually water on a given day, from Sentinel-2 imagery (10 m), and re-measures the
 // longest straight scooping run inside that observed water.
 //
-// Usage: node 05-observe.mjs <region-id> [maxReservoirs=10] [firstYear=2021] [lastYear=2025]
+// Usage: node 05-observe.mjs <region-id> [maxReservoirs=10] [firstYear=2021] [lastYear=2025] [nameContains]
+// With nameContains, only reservoirs whose name contains that text are measured, whatever their rank.
 // Output: ../web/public/data/<region-id>-observed.json
 //
 // Imagery: Copernicus Sentinel-2 L2A, read as cloud-optimised GeoTIFFs through the public
@@ -29,7 +30,7 @@ const MAX_MEGAPIXELS = 3; // largest reservoir window read at full resolution
 const MAX_BAD = 0.03; // skip a scene if more than 3 % of the reservoir is cloud, shadow or missing
 const BAD_SCL = new Set([0, 1, 3, 8, 9, 10]); // nodata, saturated, cloud shadow, cloud (medium, high), cirrus
 
-const [id, maxArg, y0Arg, y1Arg] = process.argv.slice(2);
+const [id, maxArg, y0Arg, y1Arg, onlyArg] = process.argv.slice(2);
 const region = REGIONS[id];
 if (!region) throw new Error(`Unknown region "${id}"`);
 const MAX = Number(maxArg ?? 10);
@@ -37,7 +38,9 @@ const Y0 = Number(y0Arg ?? 2021);
 const Y1 = Number(y1Arg ?? 2025);
 
 const water = JSON.parse(readFileSync(`../web/public/data/${id}-water.geojson`, 'utf8'));
-const targets = water.features.filter((f) => f.properties.kind === 'reservoir' && f.properties.run_m >= 1500).slice(0, MAX);
+const targets = onlyArg
+  ? water.features.filter((f) => f.properties.kind === 'reservoir' && (f.properties.name ?? '').toLowerCase().includes(onlyArg.toLowerCase()))
+  : water.features.filter((f) => f.properties.kind === 'reservoir' && f.properties.run_m >= 1500).slice(0, MAX);
 
 const utm = (epsg) => `+proj=utm +zone=${epsg % 100} +datum=WGS84 +units=m +no_defs`;
 

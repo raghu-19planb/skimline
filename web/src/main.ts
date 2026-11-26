@@ -313,6 +313,8 @@ function sparkline(series: Obs[], mapped: number, w = 300, h = 64): string {
     <line x1="4" x2="${w - 4}" y1="${Y(threshold).toFixed(1)}" y2="${Y(threshold).toFixed(1)}" stroke="#15232b" stroke-width="1" stroke-dasharray="4 3"/>
     <polyline points="${pts}" fill="none" stroke="#17618f" stroke-width="1.8" stroke-linejoin="round"/>${dots}</svg>`;
 }
+/** The observation with the least water surface: the clearest sign of drawdown, independent of run length. */
+const lowestShare = (series: Obs[]) => series.reduce((a, b) => (b.water_share < a.water_share ? b : a));
 const monthYear = (d: string) => new Date(d + 'T00:00:00Z').toLocaleDateString('en-CA', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 
 function renderObserved() {
@@ -337,7 +339,7 @@ function renderObserved() {
     btn.type = 'button';
     btn.innerHTML = `<span class="t">${nameOf(r.body)}</span><span class="m ${r.below ? '' : 'ok'}">${r.below ? `${r.below} of ${r.o.series.length} months` : 'never'}</span>
       ${sparkline(r.o.series, r.mapped, 300, 44)}
-      <span class="s">Shortest: ${fmt(r.o.driest.run_m)} m in ${monthYear(r.o.driest.date)} · mapped ${fmt(r.mapped)} m</span>`;
+      <span class="s">Shortest run: ${fmt(r.o.driest.run_m)} m in ${monthYear(r.o.driest.date)} · mapped ${fmt(r.mapped)} m · water surface down to ${fmt(lowestShare(r.o.series).water_share * 100)}%</span>`;
     btn.addEventListener('click', () => {
       const p = L.water.features[r.body].properties;
       map.flyTo({ center: [(p.run[0] + p.run[2]) / 2, (p.run[1] + p.run[3]) / 2], zoom: 11 });
@@ -371,7 +373,7 @@ function showWater(p: WaterProps) {
       <dt>Run ends</dt><dd>${coord(p.run[3], p.run[2])}</dd>
     </dl>
     <p>Latitude, longitude (WGS 84), on the mapped outline.</p>
-    ${o ? `<p><strong>Seen from space, ${o.series.length} clear months:</strong> run between ${fmt(o.driest.run_m)} m (${monthYear(o.driest.date)}) and ${fmt(Math.max(...o.series.map((s) => s.run_m)))} m. Dashed line is the run required.</p>${sparkline(o.series, p.run_m)}` : `<p>${p.kind === 'reservoir' ? 'Reservoir: measured on its mapped outline, which is usually the full level. A drawn-down reservoir has a shorter run. Not yet observed by satellite here.' : 'Measured on its mapped outline.'}</p>`}
+    ${o ? `<p><strong>Seen from space, ${o.series.length} clear months:</strong> run between ${fmt(o.driest.run_m)} m (${monthYear(o.driest.date)}) and ${fmt(Math.max(...o.series.map((s) => s.run_m)))} m. Its water surface fell to ${fmt(lowestShare(o.series).water_share * 100)}% of the mapped outline (${monthYear(lowestShare(o.series).date)}). Dashed line is the run required.</p>${sparkline(o.series, p.run_m)}` : `<p>${p.kind === 'reservoir' ? 'Reservoir: measured on its mapped outline, which is usually the full level. A drawn-down reservoir has a shorter run. Not yet observed by satellite here.' : 'Measured on its mapped outline.'}</p>`}
     <p>Depth is not known from open data.</p>`;
   box.querySelector('.close')!.addEventListener('click', clearProbe);
 }

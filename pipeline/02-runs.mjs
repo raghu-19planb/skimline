@@ -60,6 +60,23 @@ for (const f of raw.features) {
   });
 }
 
+// OpenStreetMap sometimes holds one water body twice: once on its own and once inside a
+// larger composite outline (several reservoirs or a whole river system under one name).
+// Both then yield the same run, and the site would count one refill site twice. Where two
+// features' runs coincide, keep the smaller outline, which is the water body itself.
+const near = (a, b) => Math.hypot((a[0] - b[0]) * 82000, (a[1] - b[1]) * 111000) < 60; // metres, mid-latitude
+const sameRun = (p, q) => (near(p.run.slice(0, 2), q.run.slice(0, 2)) && near(p.run.slice(2), q.run.slice(2))) || (near(p.run.slice(0, 2), q.run.slice(2)) && near(p.run.slice(2), q.run.slice(0, 2)));
+const dropped = [];
+for (let a = 0; a < out.length; a++) {
+  for (let b = a + 1; b < out.length; b++) {
+    if (!out[a] || !out[b] || !sameRun(out[a].properties, out[b].properties)) continue;
+    const loser = out[a].properties.area_km2 > out[b].properties.area_km2 ? a : b;
+    dropped.push(`${out[loser].properties.name ?? out[loser].properties.id} (${out[loser].properties.area_km2} km²)`);
+    out[loser] = null;
+  }
+}
+for (let k = out.length - 1; k >= 0; k--) if (!out[k]) out.splice(k, 1);
+if (dropped.length) console.log(`  dropped ${dropped.length} composite duplicate(s): ${dropped.join('; ')}`);
 out.sort((a, b) => b.properties.run_m - a.properties.run_m);
 mkdirSync('../web/public/data', { recursive: true });
 writeFileSync(
