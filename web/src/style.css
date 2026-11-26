@@ -107,3 +107,6 @@ button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid 
 .doc .flag.src { background: var(--water-soft); color: var(--water); }
 .doc .flag.asm { background: #f4ead0; color: #7a5a10; }
 .doc .table-wrap { overflow-x: auto; }
+
+.disclaimer { font-size: 12.5px; color: var(--ink-2); }
+.doc footer { margin-top: 48px; }
