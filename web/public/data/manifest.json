@@ -1,5 +1,5 @@
 {
-  "built": "2026-11-26T16:46:17.919Z",
+  "built": "2026-11-26T17:39:00.571Z",
   "params": {
     "corridorWidthM": 100,
     "minRunKeptM": 400,
@@ -61,6 +61,28 @@
         "firstYear": 2016
       },
       "observed": null
+    }
+  ],
+  "planned": [
+    {
+      "name": "Sierra de Gata – Las Hurdes, Extremadura",
+      "country": "ES"
+    },
+    {
+      "name": "Alto Palancia – Bejís, Valencia",
+      "country": "ES"
+    },
+    {
+      "name": "Jasper – Alberta foothills",
+      "country": "CA"
+    },
+    {
+      "name": "North Slave – Yellowknife, Northwest Territories",
+      "country": "CA"
+    },
+    {
+      "name": "La Ronge – northern Saskatchewan",
+      "country": "CA"
     }
   ]
 }

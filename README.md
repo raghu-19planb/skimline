@@ -13,7 +13,7 @@
 
 Pilot regions: Ourense–Zamora (Spain, with the Portuguese border) and Okanagan–Shuswap (British Columbia).
 
-The full method, every source and every limitation are on the site's Methods page (`web/methods.html`).
+The full method, every source and every limitation are on the site's Methods page (`web/methods.html`). `web/planners.html` sets out the decisions it supports, and `web/src/tour.ts` is the animated tour: add a step there when a feature is added.
 
 ## Layout
 
@@ -50,7 +50,7 @@ npm install
 npm run dev
 ```
 
-To add a region, add an entry to `pipeline/regions.mjs` and run the steps for its id.
+To add a region, add an entry to `pipeline/regions.mjs` and run the steps for its id. Regions that are queued but not built go in the `PLANNED` list in the same file; the site shows them as planned.
 
 ## Deploy
 

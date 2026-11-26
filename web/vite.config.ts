@@ -8,6 +8,7 @@ export default defineConfig({
         main: resolve(import.meta.dirname, 'index.html'),
         methods: resolve(import.meta.dirname, 'methods.html'),
         guide: resolve(import.meta.dirname, 'guide.html'),
+        planners: resolve(import.meta.dirname, 'planners.html'),
       },
     },
   },

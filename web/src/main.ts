@@ -4,6 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import './style.css';
 import { CLASSES, REF, classOf, dropsPerHour, frameFor, litresPerHour, nearest, toLonLat, toXY, turnaroundMin } from './model';
 import type { Frame, Run } from './model';
+import { initTour } from './tour';
 
 // ---------- types for the pipeline's output ----------
 interface RegionInfo {
@@ -31,7 +32,9 @@ interface Manifest {
   built: string;
   params: { corridorWidthM: number; minRunKeptM: number };
   regions: RegionInfo[];
+  planned?: { name: string; country: string }[];
 }
+const COUNTRY: Record<string, string> = { ES: 'Spain', CA: 'Canada', PT: 'Portugal' };
 interface WaterProps {
   id: string;
   name: string | null;
@@ -365,8 +368,12 @@ function showWater(p: WaterProps) {
 // ---------- region switching ----------
 async function showRegion(id: string) {
   const info = manifest.regions.find((r) => r.id === id)!;
-  for (const b of document.querySelectorAll<HTMLButtonElement>('#regions button')) b.setAttribute('aria-pressed', String(b.dataset.id === id));
+  $<HTMLSelectElement>('region-select').value = id;
   $('region-note').textContent = info.note;
+  // Keep the address shareable: it always names the region on screen.
+  const query = new URLSearchParams(location.search);
+  query.set('region', id);
+  history.replaceState(null, '', `?${query}`);
   current = await loadRegion(info);
   clearProbe();
   (map.getSource('water') as GeoJSONSource).setData(current.water as any);
@@ -394,23 +401,24 @@ function buildStaticUi() {
     b.addEventListener('click', () => setThreshold(p.m));
     presets.append(b);
   }
-  const regions = $('regions');
-  for (const r of manifest.regions) {
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.dataset.id = r.id;
-    b.textContent = r.country === 'ES' ? 'Spain' : r.country === 'CA' ? 'Canada' : r.name;
-    b.title = r.name;
-    b.addEventListener('click', () => showRegion(r.id));
-    regions.append(b);
+  // One list grouped by country, so it keeps working as regions are added.
+  // Planned regions are shown, disabled, so visitors can see where coverage is heading.
+  const select = $<HTMLSelectElement>('region-select');
+  const countries = [...new Set([...manifest.regions, ...(manifest.planned ?? [])].map((r) => r.country))];
+  for (const c of countries) {
+    const group = document.createElement('optgroup');
+    group.label = COUNTRY[c] ?? c;
+    for (const r of manifest.regions.filter((x) => x.country === c)) group.append(new Option(r.name.replace(/, (Spain|Canada)$/, ''), r.id));
+    for (const p of (manifest.planned ?? []).filter((x) => x.country === c)) {
+      const o = new Option(`${p.name} (planned)`, '');
+      o.disabled = true;
+      group.append(o);
+    }
+    select.append(group);
   }
-  for (const b of document.querySelectorAll<HTMLButtonElement>('#scenario button')) {
-    b.addEventListener('click', () => {
-      scenario = b.dataset.s as typeof scenario;
-      for (const x of document.querySelectorAll<HTMLButtonElement>('#scenario button')) x.setAttribute('aria-pressed', String(x === b));
-      recompute();
-    });
-  }
+  select.addEventListener('change', () => select.value && showRegion(select.value));
+  $('coverage').textContent = `${manifest.regions.length} regions built, ${manifest.planned?.length ?? 0} planned.`;
+  for (const b of document.querySelectorAll<HTMLButtonElement>('#scenario button')) b.addEventListener('click', () => setScenario(b.dataset.s as typeof scenario));
   let raf = 0;
   $<HTMLInputElement>('run').addEventListener('input', (ev) => {
     threshold = Number((ev.target as HTMLInputElement).value);
@@ -428,6 +436,11 @@ function buildStaticUi() {
 function setThreshold(m: number) {
   threshold = m;
   $<HTMLInputElement>('run').value = String(m);
+  recompute();
+}
+function setScenario(s: typeof scenario) {
+  scenario = s === 'dry' && current.observed.size ? 'dry' : 'mapped';
+  for (const b of document.querySelectorAll<HTMLButtonElement>('#scenario button')) b.setAttribute('aria-pressed', String(b.dataset.s === scenario));
   recompute();
 }
 
@@ -475,6 +488,16 @@ async function boot() {
   await styleReady;
   addLayers();
   await showRegion(first.id);
+  initTour({
+    setThreshold,
+    getThreshold: () => threshold,
+    setScenario,
+    getScenario: () => scenario,
+    hasObserved: () => current.observed.size > 0,
+    // A point a third of the way across the analysis area: usually land with a clear answer.
+    probeCentre: () => setProbe(current.area[0] + (current.area[2] - current.area[0]) * 0.36, current.area[1] + (current.area[3] - current.area[1]) * 0.5),
+    clearProbe,
+  });
 }
 boot().catch((err) => {
   console.error(err);

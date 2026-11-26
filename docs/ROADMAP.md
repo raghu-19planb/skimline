@@ -7,6 +7,7 @@ Ordered by how much each step would matter to the people we want to show this to
 - Longest straight run per water body, two pilot regions.
 - Minutes per load from any point; ranked past fires.
 - Monthly Sentinel-2 run history for the largest Spanish-region reservoirs, 2021–2025.
+- Animated quick tour, a page for planners, and a region list showing built and planned regions.
 
 ## Next: make the drought finding defensible
 
@@ -23,6 +24,15 @@ Ordered by how much each step would matter to the people we want to show this to
 8. **Depth, where it exists.** Modelled mean depth (HydroLAKES) as a warning flag; bathymetry where agencies publish it.
 9. **Forest only.** Weight the minutes-per-load surface by land cover so farmland and towns do not count.
 10. **Rivers and the sea.** Long river reaches and coastal water are used for scooping and are excluded today.
+
+## Coverage: more fire-prone regions
+
+Every region runs through the same five pipeline steps, driven by one entry in `pipeline/regions.mjs`. Planned regions are listed in that file and shown on the site.
+
+- **Choose regions from data, not by hand.** Rank candidate areas by burned area (NBAC for Canada, EFFIS for Europe) and build the highest first. The planned list today was picked for large, well-documented recent fires.
+- **Large reservoirs.** Sprawling reservoirs (Ricobayo, Belesar) are skipped by the satellite step because they need tens of megapixels per scene at 10 m. Read them at 20 m, or tile them.
+- **Reservoirs on image-tile edges.** Cernadilla returned no usable scenes; the likely cause is that it straddles two Sentinel-2 tiles. Mosaic adjacent tiles.
+- **Beyond Canada and Spain.** Portugal, France, Italy and Greece use the same aircraft and the same open data sources apply.
 
 ## Scale
 

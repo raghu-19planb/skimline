@@ -16,9 +16,14 @@
           <p class="lede">
             Scooper aircraft skim a lake or reservoir to refill. They need a long, straight stretch of open water. This map measures that stretch for every water body, from open data.
           </p>
+          <button id="tour-start" type="button" class="tour-start"><span aria-hidden="true">▶</span> Take the one-minute tour</button>
         </header>
 
-        <nav id="regions" class="tabs" aria-label="Region"></nav>
+        <div id="region-row" class="region-row">
+          <label for="region-select">Region</label>
+          <select id="region-select"></select>
+          <p id="coverage" class="help"></p>
+        </div>
         <p id="region-note" class="note"></p>
         <div id="scenario" class="seg" role="group" aria-label="Water level" hidden>
           <button type="button" data-s="mapped" aria-pressed="true">As mapped (full)</button>
@@ -54,14 +59,24 @@
           <p class="help">Usable run each month, measured on satellite images. Red dots are months below the run required. "Driest month seen" puts each reservoir at its own lowest month; these were not all the same month.</p>
         </section>
 
-        <section aria-labelledby="fires-h">
+        <section aria-labelledby="fires-h" id="fires-section">
           <h2 id="fires-h">Large fires furthest from usable water</h2>
           <ol id="fire-list" class="fire-list"></ol>
         </section>
 
+        <section aria-labelledby="plan-h" class="planners">
+          <h2 id="plan-h">What planners can use this for</h2>
+          <ul>
+            <li><strong>Find where scoopers are slow.</strong> Red ground that has also burned needs other aircraft or a water point.</li>
+            <li><strong>See which reservoirs matter in a dry year.</strong> The ones that lose their run, and how much ground depends on them.</li>
+            <li><strong>Brief crews from elsewhere.</strong> One method across regions and borders.</li>
+          </ul>
+          <p><a href="/planners.html">All the decisions it supports →</a></p>
+        </section>
+
         <footer>
           <p><strong>Planning aid, not for flight operations.</strong> Depth, obstacles and terrain on approach are not checked.</p>
-          <p><a href="/guide.html">How to use this map</a> · <a href="/methods.html">Methods, sources and limits</a></p>
+          <p><a href="/planners.html">For planners</a> · <a href="/guide.html">How to use this map</a> · <a href="/methods.html">Methods, sources and limits</a></p>
           <p class="disclaimer">Skimline is an independent project built from open data. It cannot promise or guarantee that the data is always the latest or accurate.</p>
           <p id="credits" class="credits"></p>
         </footer>
@@ -71,6 +86,7 @@
         <div id="map" role="application" aria-label="Map"></div>
         <div id="readout" class="readout" hidden></div>
         <p id="hint" class="hint">Click anywhere to measure that spot</p>
+        <div id="tour" class="tour" role="dialog" aria-label="Quick tour" aria-live="polite" hidden></div>
       </main>
     </div>
     <script type="module" src="/src/main.ts"></script>

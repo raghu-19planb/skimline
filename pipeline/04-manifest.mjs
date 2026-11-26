@@ -1,7 +1,7 @@
 // Step 4 — write the manifest the website reads: which regions exist and what was built.
 // Usage: node 04-manifest.mjs
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
-import { REGIONS, PARAMS } from './regions.mjs';
+import { REGIONS, PARAMS, PLANNED } from './regions.mjs';
 
 const dir = '../web/public/data';
 const regions = [];
@@ -23,5 +23,5 @@ for (const [id, r] of Object.entries(REGIONS)) {
     observed: existsSync(obsPath) ? `${id}-observed.json` : null,
   });
 }
-writeFileSync(`${dir}/manifest.json`, JSON.stringify({ built: new Date().toISOString(), params: PARAMS, regions }, null, 2));
+writeFileSync(`${dir}/manifest.json`, JSON.stringify({ built: new Date().toISOString(), params: PARAMS, regions, planned: PLANNED }, null, 2));
 console.log(`manifest: ${regions.map((r) => r.id).join(', ')}`);

@@ -25,6 +25,7 @@ const NDWI_WATER = 0.0; // green vs near-infrared (McFeeters)
 const MNDWI_WATER = 0.1; // green vs short-wave infrared (Xu)
 const SCL_WATER = 6; // ESA scene classification: water
 const SCENES_PER_MONTH = 3; // measure the clearest few and keep the wettest: water does not flicker within a month
+const MAX_MEGAPIXELS = 3; // largest reservoir window read at full resolution
 const MAX_BAD = 0.03; // skip a scene if more than 3 % of the reservoir is cloud, shadow or missing
 const BAD_SCL = new Set([0, 1, 3, 8, 9, 10]); // nodata, saturated, cloud shadow, cloud (medium, high), cirrus
 
@@ -165,6 +166,15 @@ if (existsSync(outPath)) {
 }
 for (const f of targets) {
   const p = f.properties;
+  // Very large, sprawling reservoirs need tens of megapixels per scene at 10 m. They are
+  // skipped for now; reading them at a coarser resolution is on the roadmap.
+  {
+    const ps = f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates;
+    let w0 = Infinity, s0 = Infinity, e0 = -Infinity, n0 = -Infinity;
+    for (const rings of ps) for (const [x, y] of rings[0]) { if (x < w0) w0 = x; if (x > e0) e0 = x; if (y < s0) s0 = y; if (y > n0) n0 = y; }
+    const mpx = ((e0 - w0) * 111320 * Math.cos((s0 * Math.PI) / 180) * (n0 - s0) * 110540) / (PX * PX) / 1e6;
+    if (mpx > MAX_MEGAPIXELS) { console.log(`${p.name ?? p.id}: ${mpx.toFixed(1)} megapixels per scene, skipped as too large`); continue; }
+  }
   if (result.some((r) => r.id === p.id)) { console.log(`${p.name ?? p.id}: already done, skipped`); continue; }
   const polys = f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates;
   let w = Infinity, s = Infinity, e = -Infinity, n = -Infinity;
