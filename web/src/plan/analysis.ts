@@ -3,6 +3,7 @@
 import { CLASSES, classOf, nearest, toXY } from './model.ts';
 import type { Nearest, Run } from './model.ts';
 import type { FireCentre, Observation, Region, ReservoirRecord, Scenario } from './types.ts';
+import { frozenIn } from './ice.ts';
 import { runAt } from './widths.ts';
 
 /** "Close to water": ten or more loads an hour. */
@@ -23,6 +24,8 @@ export interface Settings {
   /** Clear width of water the aircraft needs, as an index into `region.widths`. */
   width: number;
   scenario: Scenario;
+  /** Calendar month being planned for, January = 0; null for any time of year. Water seen frozen in that month is skipped. */
+  month?: number | null;
 }
 
 /** Every water body's run for the scenario and width in the settings. */
@@ -31,9 +34,18 @@ export function runsFor(region: Region, settings: Pick<Settings, 'scenario' | 'w
   return byWidth[settings.width] ?? [];
 }
 
-/** Runs that are long enough under the given settings. */
+/** Indexes of the water bodies seen frozen in a calendar month. Empty for "any time of year". */
+export function frozenBodies(region: Region, month: number | null | undefined): Set<number> {
+  const frozen = new Set<number>();
+  if (month === null || month === undefined) return frozen;
+  for (const [body, record] of region.observed) if (frozenIn(record.ice, month) === true) frozen.add(body);
+  return frozen;
+}
+
+/** Runs that are long enough under the given settings, leaving out water that is frozen in the planning month. */
 export function usableRuns(region: Region, settings: Settings): Run[] {
-  return runsFor(region, settings).filter((run) => run.lengthM >= settings.threshold);
+  const frozen = frozenBodies(region, settings.month);
+  return runsFor(region, settings).filter((run) => run.lengthM >= settings.threshold && !frozen.has(run.body));
 }
 
 /** Nearest usable water to a point given in degrees. */

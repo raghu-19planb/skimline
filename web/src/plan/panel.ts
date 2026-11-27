@@ -3,6 +3,7 @@ import { FAR_MINUTES, NEAR_MINUTES, levelFinding } from './analysis.ts';
 import type { FireAccess, ReservoirRow, Summary } from './analysis.ts';
 import { button, el, setHtml } from './dom.ts';
 import { fmt, html, monthYear, pct } from './format.ts';
+import { MONTHS } from './ice.ts';
 import { CLASSES } from './model.ts';
 import { fillToday, levelSentence } from './readout.ts';
 import { runAt, widthLabel } from './widths.ts';
@@ -133,6 +134,28 @@ export function renderSummary(now: Summary, full: Summary | null): void {
         >
       </div>`,
   );
+}
+
+/** Fills the planning-month list and reports the visitor's choice: a month index, or null for any time. */
+export function renderMonths(onPick: (month: number | null) => void): void {
+  const select = el<HTMLSelectElement>('month');
+  MONTHS.forEach((name, index) => select.append(new Option(name, String(index))));
+  select.addEventListener('change', () => onPick(select.value === '' ? null : Number(select.value)));
+}
+
+/** Says what the planning month did, and how much of the region's water has been checked for ice at all. */
+export function showIce(region: Region, month: number | null, skipped: number): void {
+  el<HTMLSelectElement>('month').value = month === null ? '' : String(month);
+  const checked = [...region.observed.values()].filter((record) => record.ice).length;
+  const total = region.water.features.length;
+  const coverage =
+    checked === 0
+      ? 'No water body here has been checked for ice yet, so nothing can be skipped.'
+      : `Ice has been checked for ${checked} of ${total} water bodies here. The rest are treated as open, which in winter they may not be.`;
+  el('ice-note').textContent =
+    month === null
+      ? `Choose a month to skip water that has been seen frozen in it. ${coverage}`
+      : `${skipped} water ${skipped === 1 ? 'body' : 'bodies'} seen frozen in ${MONTHS[month]} ${skipped === 1 ? 'is' : 'are'} skipped. ${coverage}`;
 }
 
 /** One chip per clear width the runs were measured at. */

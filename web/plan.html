@@ -59,16 +59,22 @@
         </section>
 
         <section class="step" aria-labelledby="s4">
-          <h2 id="s4"><span class="num">4</span> See it now, and in a dry year</h2>
+          <h2 id="s4"><span class="num">4</span> Test the conditions</h2>
+          <h3 id="month-h">Planning month</h3>
+          <select id="month" aria-labelledby="month-h">
+            <option value="">Any time of year</option>
+          </select>
+          <p id="ice-note" class="help"></p>
+          <h3 id="state-h">Water level</h3>
           <div id="scenario" class="seg" role="group" aria-label="Water level" hidden>
             <button type="button" data-scenario="mapped" aria-pressed="true">As mapped</button>
             <button type="button" data-scenario="latest" aria-pressed="false">Latest image</button>
             <button type="button" data-scenario="dry" aria-pressed="false">Driest month</button>
           </div>
           <p id="scenario-note" class="help" hidden></p>
-          <p id="dry-none" class="note" hidden>No reservoirs have been measured from space in this region yet, so there is no dry-year view here.</p>
+          <p id="dry-none" class="note" hidden>No water body has been measured from space in this region yet, so there is no latest or dry-year view here.</p>
           <div id="observed" hidden>
-            <h3>Reservoirs seen from space</h3>
+            <h3>Measured from space</h3>
             <p id="observed-sum" class="note lead"></p>
             <ol id="observed-list" class="pick-list"></ol>
             <p class="help">

@@ -28,6 +28,11 @@ Ordered by how much each step would matter to the people we want to show this to
 9. **Forest only.** Weight the minutes-per-load surface by land cover so farmland and towns do not count.
 10. **Rivers and the sea.** Long river reaches and coastal water are used for scooping and are excluded today.
 
+## Ice
+
+- **Done:** ice is detected on every newly measured image; a planning month skips water seen frozen in it; eight lakes in the Okanagan region and Lac de Lanoux are measured.
+- **Next:** re-measure the reservoirs that predate the ice check; measure many more Canadian lakes, since unmeasured water is treated as open; report ice-out and freeze-up dates per lake per year, which is what a spring fire planner needs.
+
 ## Coverage: more fire-prone regions
 
 Every region runs through the same five pipeline steps, driven by one entry in `pipeline/regions.mjs`. Planned regions are listed in that file and shown on the site.

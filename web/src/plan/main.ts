@@ -4,7 +4,7 @@
 //   readout.ts   draws the card      tour.ts / demo.ts  guide and recorded tour
 import 'maplibre-gl/dist/maplibre-gl.css';
 import '../styles/plan.css';
-import { LARGE_FIRE_HA, measure, reservoirRows, runsFor, slowestLargeFires, summarise } from './analysis.ts';
+import { LARGE_FIRE_HA, frozenBodies, measure, reservoirRows, runsFor, slowestLargeFires, summarise } from './analysis.ts';
 import type { FireAccess, Settings } from './analysis.ts';
 import { el } from './dom.ts';
 import { MapView } from './map-view.ts';
@@ -16,7 +16,9 @@ import {
   renderRegionSelect,
   renderReservoirs,
   renderSummary,
+  renderMonths,
   renderWidths,
+  showIce,
   showRegionInfo,
   showScenario,
   showThreshold,
@@ -35,7 +37,7 @@ const PHONE = window.matchMedia('(max-width: 820px)');
 const view = new MapView('map');
 let manifest: Manifest;
 let region: Region;
-const settings: Settings = { threshold: REF.defaultRunM, width: 0, scenario: 'mapped' };
+const settings: Settings = { threshold: REF.defaultRunM, width: 0, scenario: 'mapped', month: null };
 /** The spot being measured, if any. Kept so the card follows changes to the settings. */
 let probe: { lon: number; lat: number } | null = null;
 /** Counts region requests, so a slow download cannot overwrite a newer choice. */
@@ -54,7 +56,10 @@ function refresh(): void {
   // Outside the mapped state, the headline numbers are shown beside their mapped values.
   const full = settings.scenario === 'mapped' ? null : summarise(region, { ...settings, scenario: 'mapped' });
 
-  view.update(region, now.cellClass, runsFor(region, settings), settings.threshold, `${FIELD[settings.scenario]}${settings.width}`);
+  const frozen = frozenBodies(region, settings.month);
+  const frozenIds = [...frozen].map((body) => region.water.features[body]?.properties.id ?? '');
+  view.update(region, now.cellClass, runsFor(region, settings), settings.threshold, `${FIELD[settings.scenario]}${settings.width}`, frozenIds);
+  showIce(region, settings.month ?? null, frozen.size);
   showThreshold(settings.threshold);
   showWidth(settings.width);
   showScenario(settings.scenario, region);
@@ -124,6 +129,7 @@ function openWaterBody(body: number, fly = true): void {
     width: settings.width,
     widthM: region.widths[settings.width] ?? 0,
     scenario: settings.scenario,
+    month: settings.month ?? null,
     minDepthM: region.minDepthM,
   });
 }
@@ -178,6 +184,11 @@ function wireControls(): void {
   for (const btn of el('scenario').querySelectorAll<HTMLButtonElement>('button')) {
     btn.addEventListener('click', () => setScenario(asScenario(btn.dataset.scenario)));
   }
+
+  renderMonths((month) => {
+    settings.month = month;
+    refresh();
+  });
 
   // Dragging the slider fires many events; recompute at most once per frame.
   let frame = 0;
@@ -256,6 +267,7 @@ async function boot(): Promise<void> {
         settings.scenario = 'mapped';
         settings.threshold = REF.defaultRunM;
         settings.width = 0;
+        settings.month = null;
         clearProbe();
         refresh();
         el('panel').scrollTo({ top: 0 });

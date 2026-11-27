@@ -2,6 +2,7 @@
 // analysis can work on. `assembleRegion` is pure so it can be tested without a network.
 import { frameFor, toXY } from './model.ts';
 import type { Run } from './model.ts';
+import { isFrozen } from './ice.ts';
 import { lineAt, mappedRunAt, measuredAtAll, runAt } from './widths.ts';
 import type {
   BBox,
@@ -10,6 +11,8 @@ import type {
   FireProps,
   Manifest,
   MultiPolygonGeometry,
+  IceRecord,
+  Observation,
   ObservedFile,
   Region,
   RegionInfo,
@@ -67,6 +70,7 @@ export function assembleRegion(
       series: reservoir.series,
       driest: widths.map((_, k) => leastBy(reservoir.series, (o) => runAt(o, k))),
       latest: leastBy(reservoir.series, (o) => -Date.parse(o.date)),
+      ice: iceRecord(reservoir.series),
       lowestSurface: leastBy(reservoir.series, (o) => o.water_share),
       gauge: reservoir.gauge ?? null,
       fillHistory: reservoir.fill_history ?? [],
@@ -139,6 +143,19 @@ export function assembleRegion(
     fireCentres,
     area,
   };
+}
+
+/** Tallies, for each calendar month, the years with a clear image and the years it showed ice. */
+function iceRecord(series: Observation[]): IceRecord | null {
+  if (!series.some((o) => typeof o.ice_share === 'number')) return null;
+  const months = Array.from({ length: 12 }, () => ({ seen: 0, frozen: 0 }));
+  for (const o of series) {
+    const month = months[Number(o.date.slice(5, 7)) - 1];
+    if (!month || typeof o.ice_share !== 'number') continue;
+    month.seen++;
+    if (isFrozen(o)) month.frozen++;
+  }
+  return { months };
 }
 
 /**

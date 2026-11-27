@@ -7,6 +7,7 @@ import type { Nearest } from './model.ts';
 import { levelFinding, levelStatus } from './analysis.ts';
 import type { Gauged, LevelFinding } from './analysis.ts';
 import { liveReadings } from './gauge-live.ts';
+import { MONTHS, frozenIn, frozenMonths, monthRanges } from './ice.ts';
 import type { LiveReading } from './gauge-live.ts';
 import { fillChart, levelChart, sparkline } from './charts.ts';
 import type { ReservoirRecord, Scenario, WaterProps } from './types.ts';
@@ -91,6 +92,8 @@ export interface WaterView {
   width: number;
   widthM: number;
   scenario: Scenario;
+  /** Calendar month being planned for, January = 0; null for any time of year. */
+  month: number | null;
   /** Depth used for the known-deep runs; null where the region has no gauges. */
   minDepthM: number | null;
 }
@@ -188,13 +191,27 @@ export function showWater(props: WaterProps, record: ReservoirRecord | undefined
         }
       </p>`;
   const noRun = mapped.metres <= 0;
+  const frozenNow = view.month !== null && frozenIn(record?.ice ?? null, view.month) === true;
+  const frozenList = frozenMonths(record?.ice ?? null);
+  const images = record?.ice?.months.reduce((sum, m) => sum + m.seen, 0) ?? 0;
+  const ice = !record
+    ? ''
+    : !record.ice
+      ? html`<p>Ice: not checked for this water body.</p>`
+      : frozenList.length
+        ? html`<p><strong>Ice:</strong> seen frozen in ${monthRanges(frozenList)}, on ${images} clear images checked. It cannot be scooped while frozen.</p>`
+        : html`<p><strong>Ice:</strong> none seen on ${images} clear images checked.</p>`;
 
   show(
     html`<h3>${props.name ?? `Unnamed ${props.kind}`}</h3>
       <p>
-        <span class="tag ${longEnough ? 'ok' : 'no'}"
-          >${longEnough ? 'Long enough' : 'Too short'}: needs ${fmt(view.threshold)} m long, ${view.widthM} m wide${state}</span
-        >
+        ${
+          frozenNow
+            ? html`<span class="tag ice">Frozen in ${MONTHS[view.month ?? 0]}: skipped</span>`
+            : html`<span class="tag ${longEnough ? 'ok' : 'no'}"
+                >${longEnough ? 'Long enough' : 'Too short'}: needs ${fmt(view.threshold)} m long, ${view.widthM} m wide${state}</span
+              >`
+        }
       </p>
       <div class="big">
         <div><b>${fmt(mapped.metres)} m</b><span>longest straight run, ${view.widthM} m wide</span></div>
@@ -212,6 +229,7 @@ export function showWater(props: WaterProps, record: ReservoirRecord | undefined
               </dl>
               <p>Latitude, longitude (WGS 84), on the mapped outline.</p>`
       }
+      ${ice}
       ${history}
       ${record?.gauge ? '' : html`<p>Depth is not known here: no open water-level record is connected for this water body.</p>`}`,
   );

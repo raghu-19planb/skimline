@@ -1,7 +1,7 @@
 // Everything that touches the map library. The rest of the page talks to this class and
 // never to MapLibre directly, so the map could be swapped without touching the analysis.
 import maplibregl from 'maplibre-gl';
-import type { GeoJSONSource, Map as MapLibreMap } from 'maplibre-gl';
+import type { ExpressionSpecification, FilterSpecification, GeoJSONSource, Map as MapLibreMap } from 'maplibre-gl';
 import { CLASSES, toLonLat } from './model.ts';
 import type { Run } from './model.ts';
 import { CELL_KM } from './region.ts';
@@ -12,6 +12,10 @@ const EMPTY = { type: 'FeatureCollection' as const, features: [] };
 const SOURCES = ['grid', 'water', 'fires', 'runs', 'probe', 'area'] as const;
 type SourceId = (typeof SOURCES)[number];
 
+/** Layers a click can land on to open a water body's card. */
+const WATER_LAYERS = ['water-on', 'water-off', 'water-ice'];
+/** A filter that matches nothing, for layers that start empty. */
+const NONE: FilterSpecification = ['==', ['get', 'id'], ''];
 const INK = '#15232b';
 const FIRE = '#7a1f0c';
 
@@ -61,6 +65,12 @@ export class MapView {
     map.addLayer({ id: 'water-off', type: 'fill', source: 'water', paint: { 'fill-color': '#9fb3bd', 'fill-opacity': 0.75 } }, below);
     map.addLayer({ id: 'water-on', type: 'fill', source: 'water', paint: { 'fill-color': '#0c3f63' } }, below);
     map.addLayer({ id: 'water-on-line', type: 'line', source: 'water', paint: { 'line-color': '#ffffff', 'line-width': 1 } }, below);
+    // water seen frozen in the planning month: pale, with a dashed edge
+    map.addLayer({ id: 'water-ice', type: 'fill', source: 'water', filter: NONE, paint: { 'fill-color': '#d9eef7' } }, below);
+    map.addLayer(
+      { id: 'water-ice-line', type: 'line', source: 'water', filter: NONE, paint: { 'line-color': '#5b9dbd', 'line-width': 1.4, 'line-dasharray': [2, 2] } },
+      below,
+    );
     map.addLayer({
       id: 'runs',
       type: 'line',
@@ -83,7 +93,7 @@ export class MapView {
       paint: { 'circle-radius': 6, 'circle-color': '#fff', 'circle-stroke-color': INK, 'circle-stroke-width': 3 },
     });
 
-    for (const layer of ['water-on', 'water-off']) {
+    for (const layer of WATER_LAYERS) {
       map.on('mouseenter', layer, () => (map.getCanvas().style.cursor = 'pointer'));
       map.on('mouseleave', layer, () => (map.getCanvas().style.cursor = ''));
     }
@@ -92,7 +102,7 @@ export class MapView {
   /** Calls back with the water body clicked, or with the clicked position if none was hit. */
   onClick(handler: (hit: { waterId: string } | { lon: number; lat: number }) => void): void {
     this.map.on('click', (event) => {
-      const water = this.map.queryRenderedFeatures(event.point, { layers: ['water-on', 'water-off'] })[0];
+      const water = this.map.queryRenderedFeatures(event.point, { layers: WATER_LAYERS })[0];
       const id = (water?.properties as Partial<WaterProps> | undefined)?.id;
       handler(id ? { waterId: id } : { lon: event.lngLat.lng, lat: event.lngLat.lat });
     });
@@ -134,7 +144,7 @@ export class MapView {
    * Redraws everything that depends on the settings. `runs` are the runs to draw, and
    * `field` names the per-feature property holding their length (see region.ts).
    */
-  update(region: Region, cellClass: Uint8Array, runs: Run[], threshold: number, field: string): void {
+  update(region: Region, cellClass: Uint8Array, runs: Run[], threshold: number, field: string, frozenIds: string[] = []): void {
     const half = CELL_KM / 2;
     this.source('grid').setData({
       type: 'FeatureCollection',
@@ -160,13 +170,18 @@ export class MapView {
       }),
     });
 
-    this.map.setFilter('water-on', ['>=', ['get', field], threshold]);
-    this.map.setFilter('water-on-line', ['>=', ['get', field], threshold]);
-    this.map.setFilter('water-off', ['<', ['get', field], threshold]);
+    const frozenBodyIds = new Set(frozenIds);
+    const frozen: ExpressionSpecification = ['in', ['get', 'id'], ['literal', frozenIds]];
+    const open: ExpressionSpecification = ['!', frozen];
+    this.map.setFilter('water-on', ['all', open, ['>=', ['get', field], threshold]]);
+    this.map.setFilter('water-on-line', ['all', open, ['>=', ['get', field], threshold]]);
+    this.map.setFilter('water-off', ['all', open, ['<', ['get', field], threshold]]);
+    this.map.setFilter('water-ice', frozen);
+    this.map.setFilter('water-ice-line', frozen);
     this.source('runs').setData({
       type: 'FeatureCollection',
       features: runs
-        .filter((run) => run.lengthM >= threshold)
+        .filter((run) => run.lengthM >= threshold && !frozenBodyIds.has(region.water.features[run.body]?.properties.id ?? ''))
         .map((run) => ({
           type: 'Feature',
           properties: {},

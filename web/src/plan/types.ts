@@ -33,6 +33,8 @@ export interface Observation {
   line: RunLine | null;
   /** Share of the mapped outline that was water, 0–1. */
   water_share: number;
+  /** Most ice or snow seen on the outline on any clear image that month, 0–1. Absent where ice was not checked. */
+  ice_share?: number;
   /** Water surface elevation from the official gauge that day, metres above sea level. Absent where there is no gauge. */
   level_m?: number | null;
   /** Percent of capacity from the official gauge that day. */
@@ -113,6 +115,14 @@ export interface FeatureCollection<P, G = PolygonGeometry | MultiPolygonGeometry
   features: Feature<P, G>[];
 }
 
+/**
+ * When a water body has been seen frozen. One entry per calendar month, January first:
+ * how many years had a clear image that month, and in how many of those it was frozen.
+ */
+export interface IceRecord {
+  months: { seen: number; frozen: number }[];
+}
+
 /** A reservoir's satellite record. */
 export interface ReservoirRecord {
   series: Observation[];
@@ -120,6 +130,8 @@ export interface ReservoirRecord {
   driest: Observation[];
   /** The most recent observation. */
   latest: Observation;
+  /** Null where ice was not checked when this water body was measured. */
+  ice: IceRecord | null;
   /** Observation with the least water surface: the clearest sign of drawdown, independent of run length. */
   lowestSurface: Observation;
   gauge: Gauge | null;

@@ -3,6 +3,7 @@
 import { raw } from './format.ts';
 import type { SafeHtml } from './format.ts';
 import type { Observation } from './types.ts';
+import { isFrozen } from './ice.ts';
 import { deepRunAt, runAt } from './widths.ts';
 
 const PAD = 4;
@@ -41,6 +42,10 @@ export function sparkline(series: Observation[], mappedRunM: number, threshold: 
       `<line class="need" x1="${PAD}" x2="${width - PAD}" y1="${y(threshold)}" y2="${y(threshold)}"/>` +
       `<polyline class="run" points="${line}"/>` +
       (deep ? `<polyline class="deep" points="${deep}"/>` : '') +
+      series
+        .filter(isFrozen)
+        .map((o) => `<rect class="ice" x="${n(Number(x(o.date)) - 2.5)}" y="${n(height - PAD - 5)}" width="5" height="5"/>`)
+        .join('') +
       `${dots}</svg>`,
   );
 }

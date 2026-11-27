@@ -288,6 +288,29 @@
         <code>pipeline/experiments/width-sensitivity.mjs</code>.
       </p>
 
+      <h2>Ice</h2>
+      <p>
+        A scooper cannot refill from a frozen surface. On each satellite image, a pixel inside the outline counts as ice if it passes the usual snow test, a
+        high snow index on a bright surface, and is also white: blue and red light reflect about equally. Ice is tested before cloud, because frozen lakes are
+        usually labelled as cloud. An image counts as frozen when ice covers a tenth or more of the outline; the threshold is set low because partial and broken
+        ice are hazards too. A water body counts as frozen in a calendar month if it was frozen in at least half of the years with a clear image that month.
+      </p>
+      <p>
+        The whiteness test is there because of wildfire smoke. Smoke over open water is bright in visible light and dark in short-wave infrared, exactly what
+        the snow test looks for, and our first version flagged lakes in British Columbia as frozen in August 2021 and 2023, during large fires. Smoke is
+        blue-tinted; ice is not. On White Lake, winter ice has a blue-to-red ratio of 0.99 to 1.04; the smoke has 1.23 to 1.53. The imagery's own snow class
+        could not be used: it labelled a fifth of that smoky lake as snow. Thin, dark ice with no snow on it is not bright enough to pass and will be missed.
+      </p>
+      <p>
+        This fixed a flaw. One of the water tests uses the same formula as the snow index, so until ice was tested first, a frozen lake was counted as open
+        water. Lac de Lanoux in the Pyrenees, measured again, is frozen from December to May in every year observed.
+      </p>
+      <p>
+        Choosing a planning month in step 4 skips water seen frozen in that month. Three limits apply. Only measured water bodies are checked, so an unmeasured
+        lake is treated as open even in midwinter. A month with no clear image is unknown, not open. And the reservoirs measured before this check was added
+        have not been re-measured for ice; they sit at low altitude in Spain, where we do not expect ice, but that is an assumption.
+      </p>
+
       <h2>Numbers and where they come from</h2>
       <div class="table-wrap">
         <table>
